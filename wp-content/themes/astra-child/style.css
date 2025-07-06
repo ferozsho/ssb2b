@@ -309,3 +309,16 @@ Template: astra
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.site-below-footer-wrap[data-section="section-below-footer-builder"] {
+    padding: 0;
+    background: var(--ast-global-color-2);
+}
+.ast-footer-copyright {
+  color: var(--ast-global-color-4);
+}
+
+.ast-footer-copyright {
+  text-align: right;
+  font-size: 14px;
+}

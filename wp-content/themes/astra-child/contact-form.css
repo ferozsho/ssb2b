@@ -132,7 +132,8 @@ label {
 }
 
 .loading-spinner {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     margin-left: 15px;
     vertical-align: middle;
 }
@@ -145,6 +146,20 @@ label {
     border-top-color: #fff;
     animation: spin 1s ease-in-out infinite;
     display: inline-block;
+}
+
+.submit-text {
+    margin-left: 10px;
+    color: #555;
+}
+
+.form-error-message {
+    color: #e74c3c;
+    margin-top: 15px;
+    padding: 10px;
+    border-left: 4px solid #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    font-size: 14px;
 }
 
 .contact-form-success {

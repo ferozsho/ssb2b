@@ -437,6 +437,24 @@ function handle_contact_form_submit() {
 
     wp_mail($email, $auto_reply_subject, $auto_reply_body, $auto_reply_headers);
 
+    // Store submission in database
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'contact_form_submissions';
+
+    $data = array(
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'email' => $email,
+        'phone' => $phone,
+        'message' => $message,
+        'ip_address' => $_SERVER['REMOTE_ADDR'],
+        'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+        'created_at' => current_time('mysql')
+    );
+
+    $wpdb->insert($table_name, $data);
+
+    // Send response
     if ($sent) {
         wp_send_json_success(array('message' => 'Your message has been sent successfully!'));
     } else {
@@ -447,3 +465,96 @@ function handle_contact_form_submit() {
 }
 add_action('wp_ajax_contact_form_submit', 'handle_contact_form_submit');
 add_action('wp_ajax_nopriv_contact_form_submit', 'handle_contact_form_submit');
+
+/**
+ * Create database tables for form submissions on theme activation
+ */
+function create_form_submissions_tables() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+
+    // Contact form submissions table
+    $contact_table = $wpdb->prefix . 'contact_form_submissions';
+
+    $sql_contact = "CREATE TABLE IF NOT EXISTS $contact_table (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        first_name varchar(100) NOT NULL,
+        last_name varchar(100) NOT NULL,
+        email varchar(100) NOT NULL,
+        phone varchar(50) NOT NULL,
+        message text NOT NULL,
+        ip_address varchar(100) NOT NULL,
+        user_agent text NOT NULL,
+        created_at datetime NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql_contact);
+}
+add_action('after_switch_theme', 'create_form_submissions_tables');
+
+/**
+ * Register admin pages for form submissions
+ */
+function register_form_submissions_admin_pages() {
+    add_menu_page(
+        'Form Submissions',
+        'Form Submissions',
+        'manage_options',
+        'form-submissions',
+        'contact_form_submissions_page',
+        'dashicons-feedback',
+        30
+    );
+}
+add_action('admin_menu', 'register_form_submissions_admin_pages');
+
+/**
+ * Render contact form submissions admin page
+ */
+function contact_form_submissions_page() {
+    require_once(get_stylesheet_directory() . '/admin/contact-submissions.php');
+}
+
+/**
+ * AJAX handler for getting submission details
+ */
+function get_submission_details() {
+    // Check nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'get_submission_details')) {
+        wp_send_json_error(array('message' => 'Security verification failed'));
+    }
+
+    // Get submission ID
+    $submission_id = isset($_POST['submission_id']) ? intval($_POST['submission_id']) : 0;
+
+    if (!$submission_id) {
+        wp_send_json_error(array('message' => 'Invalid submission ID'));
+    }
+
+    // Get submission details
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'contact_form_submissions';
+
+    $submission = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE id = %d",
+            $submission_id
+        ),
+        ARRAY_A
+    );
+
+    if (!$submission) {
+        wp_send_json_error(array('message' => 'Submission not found'));
+    }
+
+    // Format date
+    $date_format = get_option('date_format');
+    $time_format = get_option('time_format');
+    $timestamp = strtotime($submission['created_at']);
+    $submission['formatted_date'] = date_i18n($date_format . ' ' . $time_format, $timestamp);
+
+    wp_send_json_success($submission);
+}
+add_action('wp_ajax_get_submission_details', 'get_submission_details');

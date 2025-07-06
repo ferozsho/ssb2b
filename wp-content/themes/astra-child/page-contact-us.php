@@ -63,8 +63,10 @@ get_header();
                             <div class="form-group">
                                 <?php wp_nonce_field('contact_form_submit', 'contact_form_nonce'); ?>
                                 <button type="submit" id="submit-button" class="submit-button">Submit</button>
+                                <div class="form-error-message" style="display: none;"></div>
                                 <div class="loading-spinner" style="display: none;">
                                     <span class="spinner"></span>
+                                    <span class="submit-text">Submitting...</span>
                                 </div>
                             </div>
                         </form>

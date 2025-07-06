@@ -103,30 +103,46 @@
                 email: formFields.email.val().trim(),
                 message: formFields.message.val().trim(),
                 nonce: $('#contact_form_nonce').val()
-            };            $.ajax({
+            };            submitButton.text('Submitting...');
+
+            $.ajax({
                 url: contactFormData.ajaxurl,
                 type: 'POST',
                 data: formData,
                 success: function(response) {
-                    submitButton.prop('disabled', false);
-                    loadingSpinner.hide();
-
                     if (response.success) {
                         // Show success message
                         contactForm.hide();
                         successMessage.fadeIn();
                         resetForm();
 
+                        // Reset button state
+                        submitButton.prop('disabled', false);
+                        submitButton.text('Submit');
+                        loadingSpinner.hide();
+                        $('.form-error-message').hide();
+
                         // Don't automatically hide the success message
                         // User can close it by clicking submit another message
                     } else {
-                        alert(response.data.message || 'Something went wrong. Please try again.');
+                        // Show error on form
+                        submitButton.prop('disabled', false);
+                        submitButton.text('Submit');
+                        loadingSpinner.hide();
+
+                        // Display error message on form
+                        const errorMessage = response.data.message || 'Something went wrong. Please try again.';
+                        $('.form-error-message').text(errorMessage).show();
                     }
                 },
                 error: function() {
+                    // Reset button and show error
                     submitButton.prop('disabled', false);
+                    submitButton.text('Submit');
                     loadingSpinner.hide();
-                    alert('Something went wrong. Please try again later.');
+
+                    // Display error message on form
+                    $('.form-error-message').text('Something went wrong. Please try again later.').show();
                 }
             });
         });
