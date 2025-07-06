@@ -26,13 +26,25 @@ function child_enqueue_styles() {
 function child_enqueue_scripts() {
     // Only load on pages using the lead form template
     if (is_page_template('page-lead-form.php')) {
+        wp_enqueue_style(
+            'lead-form-css',
+            get_stylesheet_directory_uri() . '/css/lead-form.css',
+            array(),
+            CHILD_THEME_SS_ENTERPRISES_B2B_VERSION
+        );
+
         wp_enqueue_script(
-            'lead-form-js',
-            get_stylesheet_directory_uri() . '/js/lead-form.js',
+            'lead-form-ajax-js',
+            get_stylesheet_directory_uri() . '/js/lead-form-ajax.js',
             array('jquery'),
             CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
             true
         );
+
+        wp_localize_script('lead-form-ajax-js', 'leadFormData', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('lead_form_nonce')
+        ));
     }
 
     // Enqueue Contact Form CSS and JS
@@ -254,16 +266,14 @@ function handle_lead_generation_form() {
             'location_source' => $location_source
         );
 
-        // Save to custom table or post meta (for now, we'll save as custom post type)
-        $lead_post = array(
-            'post_title' => 'Lead: ' . $first_name . ' ' . $last_name . ' (' . $company . ')',
-            'post_content' => $message,
-            'post_status' => 'private',
-            'post_type' => 'lead_submission',
-            'meta_input' => $lead_data
-        );
+        // Save to custom lead_forms table
+        $lead_data['user_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        $lead_data['created_at'] = current_time('mysql');
 
-        wp_insert_post($lead_post);
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'lead_forms';
+
+        $wpdb->insert($table_name, $lead_data);
 
         // Redirect with success message
         if ($sent) {
@@ -516,6 +526,184 @@ add_action('wp_ajax_contact_form_submit', 'handle_contact_form_submit');
 add_action('wp_ajax_nopriv_contact_form_submit', 'handle_contact_form_submit');
 
 /**
+ * Lead Form AJAX Handler
+ */
+function handle_lead_form_ajax_submit() {
+    // Check nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'lead_form_nonce')) {
+        wp_send_json_error(array('message' => 'Security verification failed'));
+        die();
+    }
+
+    // Sanitize and validate form data
+    $first_name = isset($_POST['lead_first_name']) ? sanitize_text_field($_POST['lead_first_name']) : '';
+    $last_name = isset($_POST['lead_last_name']) ? sanitize_text_field($_POST['lead_last_name']) : '';
+    $email = isset($_POST['lead_email']) ? sanitize_email($_POST['lead_email']) : '';
+    $phone = isset($_POST['lead_phone']) ? sanitize_text_field($_POST['lead_phone']) : '';
+    $job_title = isset($_POST['lead_job_title']) ? sanitize_text_field($_POST['lead_job_title']) : '';
+    $department = isset($_POST['lead_department']) ? sanitize_text_field($_POST['lead_department']) : '';
+    $company = isset($_POST['lead_company']) ? sanitize_text_field($_POST['lead_company']) : '';
+    $website = isset($_POST['lead_website']) ? esc_url_raw($_POST['lead_website']) : '';
+    $industry = isset($_POST['lead_industry']) ? sanitize_text_field($_POST['lead_industry']) : '';
+    $company_size = isset($_POST['lead_company_size']) ? sanitize_text_field($_POST['lead_company_size']) : '';
+    $subject = isset($_POST['lead_subject']) ? sanitize_text_field($_POST['lead_subject']) : '';
+    $message = isset($_POST['lead_message']) ? sanitize_textarea_field($_POST['lead_message']) : '';
+    $interest = isset($_POST['lead_interest']) ? sanitize_text_field($_POST['lead_interest']) : '';
+    $budget = isset($_POST['lead_budget']) ? sanitize_text_field($_POST['lead_budget']) : '';
+    $timeline = isset($_POST['lead_timeline']) ? sanitize_text_field($_POST['lead_timeline']) : '';
+    $how_heard = isset($_POST['lead_how_heard']) ? sanitize_text_field($_POST['lead_how_heard']) : '';
+    $consent = isset($_POST['lead_consent']) ? 1 : 0;
+    $marketing_consent = isset($_POST['lead_marketing_consent']) ? 1 : 0;
+
+    // Location data
+    $city = isset($_POST['lead_city']) ? sanitize_text_field($_POST['lead_city']) : '';
+    $state = isset($_POST['lead_state']) ? sanitize_text_field($_POST['lead_state']) : '';
+    $country = isset($_POST['lead_country']) ? sanitize_text_field($_POST['lead_country']) : '';
+    $postal_code = isset($_POST['lead_postal_code']) ? sanitize_text_field($_POST['lead_postal_code']) : '';
+    $latitude = isset($_POST['lead_latitude']) ? sanitize_text_field($_POST['lead_latitude']) : '';
+    $longitude = isset($_POST['lead_longitude']) ? sanitize_text_field($_POST['lead_longitude']) : '';
+    $timezone = isset($_POST['lead_timezone']) ? sanitize_text_field($_POST['lead_timezone']) : '';
+    $ip_address = isset($_POST['lead_ip_address']) ? sanitize_text_field($_POST['lead_ip_address']) : $_SERVER['REMOTE_ADDR'];
+    $location_source = isset($_POST['lead_location_source']) ? sanitize_text_field($_POST['lead_location_source']) : 'form';
+
+    // Validate required fields
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($company) || empty($subject) || empty($message) || !$consent) {
+        wp_send_json_error(array('message' => 'Please fill in all required fields'));
+        die();
+    }
+
+    if (!is_email($email)) {
+        wp_send_json_error(array('message' => 'Please enter a valid email address'));
+        die();
+    }
+
+    // Get admin email
+    $admin_email = get_option('admin_email');
+    $site_name = get_bloginfo('name');
+
+    // Prepare email content
+    $email_subject = '[' . $site_name . '] New Lead: ' . $subject;
+
+    $email_body = "New lead submission from " . $site_name . "\n\n";
+    $email_body .= "=== PERSONAL INFORMATION ===\n";
+    $email_body .= "Name: " . $first_name . " " . $last_name . "\n";
+    $email_body .= "Email: " . $email . "\n";
+    $email_body .= "Phone: " . $phone . "\n";
+    $email_body .= "Job Title: " . $job_title . "\n";
+    $email_body .= "Department: " . $department . "\n\n";
+
+    $email_body .= "=== COMPANY INFORMATION ===\n";
+    $email_body .= "Company: " . $company . "\n";
+    $email_body .= "Website: " . $website . "\n";
+    $email_body .= "Industry: " . $industry . "\n";
+    $email_body .= "Company Size: " . $company_size . "\n\n";
+
+    $email_body .= "=== LOCATION INFORMATION ===\n";
+    $email_body .= "City: " . $city . "\n";
+    $email_body .= "State/Region: " . $state . "\n";
+    $email_body .= "Country: " . $country . "\n";
+    $email_body .= "ZIP/Postal Code: " . $postal_code . "\n";
+    $email_body .= "Location Source: " . $location_source . "\n\n";
+
+    $email_body .= "=== INQUIRY DETAILS ===\n";
+    $email_body .= "Subject: " . $subject . "\n";
+    $email_body .= "Area of Interest: " . $interest . "\n";
+    $email_body .= "Budget Range: " . $budget . "\n";
+    $email_body .= "Timeline: " . $timeline . "\n";
+    $email_body .= "How they heard about us: " . $how_heard . "\n";
+    $email_body .= "Marketing consent: " . ($marketing_consent ? 'Yes' : 'No') . "\n\n";
+
+    $email_body .= "MESSAGE:\n" . $message . "\n\n";
+
+    $email_body .= "=== TECHNICAL DETAILS ===\n";
+    $email_body .= "Submitted on: " . date('Y-m-d H:i:s') . "\n";
+    $email_body .= "IP Address: " . $ip_address . "\n";
+    if ($latitude && $longitude) {
+        $email_body .= "Coordinates: " . $latitude . ", " . $longitude . "\n";
+    }
+    if ($timezone) {
+        $email_body .= "Timezone: " . $timezone . "\n";
+    }
+
+    // Email headers
+    $headers = array();
+    $headers[] = 'From: ' . $site_name . ' <' . $admin_email . '>';
+    $headers[] = 'Reply-To: ' . $first_name . ' ' . $last_name . ' <' . $email . '>';
+    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
+
+    // Send email using wp_mail (WP Mail SMTP will handle the actual sending)
+    $sent = wp_mail($admin_email, $email_subject, $email_body, $headers);
+
+    // Send auto-reply to customer
+    $auto_reply_subject = 'Thank you for contacting ' . $site_name;
+    $auto_reply_body = "Dear " . $first_name . ",\n\n";
+    $auto_reply_body .= "Thank you for contacting us. We have received your inquiry and will get back to you as soon as possible.\n\n";
+    $auto_reply_body .= "Your inquiry details:\n";
+    $auto_reply_body .= "Company: " . $company . "\n";
+    $auto_reply_body .= "Subject: " . $subject . "\n";
+    $auto_reply_body .= "Message: " . $message . "\n\n";
+    $auto_reply_body .= "We appreciate your interest and will respond within 24 hours during business days.\n\n";
+    $auto_reply_body .= "Best regards,\n";
+    $auto_reply_body .= $site_name . " Team\n";
+
+    $auto_reply_headers = array();
+    $auto_reply_headers[] = 'From: ' . $site_name . ' <' . $admin_email . '>';
+    $auto_reply_headers[] = 'Content-Type: text/plain; charset=UTF-8';
+
+    wp_mail($email, $auto_reply_subject, $auto_reply_body, $auto_reply_headers);
+
+    // Store lead in database
+    $lead_data = array(
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'email' => $email,
+        'phone' => $phone,
+        'job_title' => $job_title,
+        'department' => $department,
+        'company' => $company,
+        'website' => $website,
+        'industry' => $industry,
+        'company_size' => $company_size,
+        'city' => $city,
+        'state' => $state,
+        'country' => $country,
+        'postal_code' => $postal_code,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'timezone' => $timezone,
+        'subject' => $subject,
+        'message' => $message,
+        'interest' => $interest,
+        'budget' => $budget,
+        'timeline' => $timeline,
+        'how_heard' => $how_heard,
+        'marketing_consent' => $marketing_consent,
+        'ip_address' => $ip_address,
+        'location_source' => $location_source,
+        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+        'created_at' => current_time('mysql')
+    );
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'lead_forms';
+
+    $insert_result = $wpdb->insert($table_name, $lead_data);
+
+    if ($sent && $insert_result) {
+        wp_send_json_success(array(
+            'message' => 'Thank you! Your message has been sent successfully. We will get back to you soon.',
+            'lead_id' => $wpdb->insert_id
+        ));
+    } else {
+        wp_send_json_error(array('message' => 'There was an error processing your submission. Please try again or contact us directly.'));
+    }
+
+    die();
+}
+add_action('wp_ajax_lead_form_submit', 'handle_lead_form_ajax_submit');
+add_action('wp_ajax_nopriv_lead_form_submit', 'handle_lead_form_ajax_submit');
+
+/**
  * Create database tables for form submissions on theme activation
  */
 function create_form_submissions_tables() {
@@ -546,8 +734,45 @@ function create_form_submissions_tables() {
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
+    // Lead form submissions table
+    $lead_table = $wpdb->prefix . 'lead_forms';
+
+    $sql_lead = "CREATE TABLE IF NOT EXISTS $lead_table (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        first_name varchar(100) NOT NULL,
+        last_name varchar(100) NOT NULL,
+        email varchar(100) NOT NULL,
+        phone varchar(100) NOT NULL,
+        job_title varchar(100) NOT NULL,
+        department varchar(100) NOT NULL,
+        company varchar(100) NOT NULL,
+        website varchar(255) NOT NULL,
+        industry varchar(100) NOT NULL,
+        company_size varchar(100) NOT NULL,
+        city varchar(100) NOT NULL,
+        state varchar(100) NOT NULL,
+        country varchar(100) NOT NULL,
+        postal_code varchar(50) NOT NULL,
+        latitude varchar(50) NOT NULL,
+        longitude varchar(50) NOT NULL,
+        timezone varchar(100) NOT NULL,
+        subject varchar(255) NOT NULL,
+        message text NOT NULL,
+        interest varchar(100) NOT NULL,
+        budget varchar(100) NOT NULL,
+        timeline varchar(100) NOT NULL,
+        how_heard varchar(100) NOT NULL,
+        marketing_consent tinyint(1) NOT NULL DEFAULT 0,
+        ip_address varchar(100) NOT NULL,
+        location_source varchar(50) NOT NULL,
+        user_agent text NOT NULL,
+        created_at datetime NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
+
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql_contact);
+    dbDelta($sql_lead);
 }
 add_action('after_switch_theme', 'create_form_submissions_tables');
 
@@ -564,6 +789,15 @@ function register_form_submissions_admin_pages() {
         'dashicons-feedback',
         30
     );
+
+    add_submenu_page(
+        'form-submissions',
+        'Lead Submissions',
+        'Lead Submissions',
+        'manage_options',
+        'lead-submissions',
+        'lead_form_submissions_page'
+    );
 }
 add_action('admin_menu', 'register_form_submissions_admin_pages');
 
@@ -572,6 +806,13 @@ add_action('admin_menu', 'register_form_submissions_admin_pages');
  */
 function contact_form_submissions_page() {
     require_once(get_stylesheet_directory() . '/admin/contact-submissions.php');
+}
+
+/**
+ * Render lead form submissions admin page
+ */
+function lead_form_submissions_page() {
+    require_once(get_stylesheet_directory() . '/admin/lead-submissions.php');
 }
 
 /**
@@ -615,3 +856,45 @@ function get_submission_details() {
     wp_send_json_success($submission);
 }
 add_action('wp_ajax_get_submission_details', 'get_submission_details');
+
+/**
+ * AJAX handler for getting lead submission details
+ */
+function get_lead_submission_details() {
+    // Check nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'get_lead_submission_details')) {
+        wp_send_json_error(array('message' => 'Security verification failed'));
+    }
+
+    // Get submission ID
+    $submission_id = isset($_POST['submission_id']) ? intval($_POST['submission_id']) : 0;
+
+    if (!$submission_id) {
+        wp_send_json_error(array('message' => 'Invalid submission ID'));
+    }
+
+    // Get submission details
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'lead_forms';
+
+    $submission = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE id = %d",
+            $submission_id
+        ),
+        ARRAY_A
+    );
+
+    if (!$submission) {
+        wp_send_json_error(array('message' => 'Submission not found'));
+    }
+
+    // Format date
+    $date_format = get_option('date_format');
+    $time_format = get_option('time_format');
+    $timestamp = strtotime($submission['created_at']);
+    $submission['formatted_date'] = date_i18n($date_format . ' ' . $time_format, $timestamp);
+
+    wp_send_json_success($submission);
+}
+add_action('wp_ajax_get_lead_submission_details', 'get_lead_submission_details');

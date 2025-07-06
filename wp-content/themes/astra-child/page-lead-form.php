@@ -1,7 +1,7 @@
 <?php
 /**
  * Template Name: Lead Generation Form
- * 
+ *
  * Custom page template for lead generation form
  *
  * @package SS Enterprises B2B
@@ -13,18 +13,18 @@ get_header(); ?>
 <div class="ast-container">
     <div id="primary" class="content-area">
         <main id="main" class="site-main">
-            
+
             <?php while ( have_posts() ) : the_post(); ?>
-                
+
                 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-                    
+
                     <header class="entry-header">
                         <?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
                     </header><!-- .entry-header -->
 
                     <div class="entry-content">
                         <?php the_content(); ?>
-                        
+
                         <!-- Lead Generation Form -->
                         <div class="lead-form-container">
                             <?php
@@ -32,23 +32,23 @@ get_header(); ?>
                             if (isset($_GET['lead_form_sent']) && $_GET['lead_form_sent'] === '1') {
                                 echo '<div class="lead-form-success">Thank you! Your message has been sent successfully. We will get back to you soon.</div>';
                             }
-                            
+
                             // Display error message if there was an issue
                             if (isset($_GET['lead_form_error']) && $_GET['lead_form_error'] === '1') {
                                 echo '<div class="lead-form-error">Sorry, there was an error sending your message. Please try again or contact us directly.</div>';
                             }
-                            
+
                             // Get user's location data for auto-filling
                             $location_data = SSB2B_Geolocation::get_location_by_ip();
                             ?>
-                            
-                            <form id="lead-generation-form" class="lead-form" method="post" action="">
-                                <?php wp_nonce_field('lead_form_nonce', 'lead_form_nonce_field'); ?>
-                                
+
+                            <form id="lead-generation-form" class="lead-form" method="post">
+                                <div id="form-response-container"></div>
+
                                 <!-- Personal Information Section -->
                                 <div class="form-section">
                                     <h3 class="form-section-title">Personal Information</h3>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_first_name">First Name *</label>
@@ -59,7 +59,7 @@ get_header(); ?>
                                             <input type="text" id="lead_last_name" name="lead_last_name" required>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_email">Email Address *</label>
@@ -70,7 +70,7 @@ get_header(); ?>
                                             <input type="tel" id="lead_phone" name="lead_phone">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_job_title">Job Title</label>
@@ -93,11 +93,11 @@ get_header(); ?>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Company Information Section -->
                                 <div class="form-section">
                                     <h3 class="form-section-title">Company Information</h3>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_company">Company Name *</label>
@@ -108,7 +108,7 @@ get_header(); ?>
                                             <input type="url" id="lead_website" name="lead_website" placeholder="https://example.com">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_industry">Industry</label>
@@ -141,12 +141,12 @@ get_header(); ?>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Location Information Section (Auto-filled) -->
                                 <div class="form-section">
                                     <h3 class="form-section-title">Location Information</h3>
                                     <p class="form-section-note">Location information has been automatically detected. Please verify and update if needed.</p>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_city">City</label>
@@ -157,7 +157,7 @@ get_header(); ?>
                                             <input type="text" id="lead_state" name="lead_state" value="<?php echo esc_attr($location_data['state']); ?>">
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_country">Country</label>
@@ -168,7 +168,7 @@ get_header(); ?>
                                             <input type="text" id="lead_postal_code" name="lead_postal_code" value="<?php echo esc_attr($location_data['postal_code']); ?>">
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Hidden fields for additional location data -->
                                     <input type="hidden" id="lead_latitude" name="lead_latitude" value="<?php echo esc_attr($location_data['latitude']); ?>">
                                     <input type="hidden" id="lead_longitude" name="lead_longitude" value="<?php echo esc_attr($location_data['longitude']); ?>">
@@ -176,18 +176,18 @@ get_header(); ?>
                                     <input type="hidden" id="lead_ip_address" name="lead_ip_address" value="<?php echo esc_attr($location_data['ip']); ?>">
                                     <input type="hidden" id="lead_location_source" name="lead_location_source" value="<?php echo esc_attr($location_data['source']); ?>">
                                 </div>
-                                
+
                                 <!-- Inquiry Information Section -->
                                 <div class="form-section">
                                     <h3 class="form-section-title">Inquiry Details</h3>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="lead_subject">Subject *</label>
                                             <input type="text" id="lead_subject" name="lead_subject" required>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_interest">Area of Interest</label>
@@ -217,7 +217,7 @@ get_header(); ?>
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_timeline">Timeline</label>
@@ -245,7 +245,7 @@ get_header(); ?>
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="lead_message">Message *</label>
@@ -253,7 +253,7 @@ get_header(); ?>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <!-- Consent and Submit Section -->
                                 <div class="form-section">
                                     <div class="form-row">
@@ -262,30 +262,30 @@ get_header(); ?>
                                             <label for="lead_consent">I agree to receive communications and understand that my information will be handled according to the privacy policy. *</label>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group">
                                             <input type="checkbox" id="lead_marketing_consent" name="lead_marketing_consent">
                                             <label for="lead_marketing_consent">I would like to receive updates about products, services, and industry insights.</label>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <button type="submit" name="submit_lead_form" class="lead-form-submit">Send Message</button>
+                                            <button type="submit" class="lead-form-submit">Send Message</button>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </form>
                         </div>
-                        
+
                     </div><!-- .entry-content -->
-                    
+
                 </article><!-- #post-## -->
-                
+
             <?php endwhile; ?>
-            
+
         </main><!-- #main -->
     </div><!-- #primary -->
 </div><!-- .ast-container -->
