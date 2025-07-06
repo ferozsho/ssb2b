@@ -529,9 +529,13 @@ add_action('wp_ajax_nopriv_contact_form_submit', 'handle_contact_form_submit');
  * Lead Form AJAX Handler
  */
 function handle_lead_form_ajax_submit() {
-    // Check nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'lead_form_nonce')) {
-        wp_send_json_error(array('message' => 'Security verification failed'));
+    // Check nonce for security - check both possible nonce field names
+    $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+    $lead_form_nonce = isset($_POST['lead_form_nonce']) ? $_POST['lead_form_nonce'] : '';
+
+    if ((!$nonce || !wp_verify_nonce($nonce, 'lead_form_nonce')) &&
+        (!$lead_form_nonce || !wp_verify_nonce($lead_form_nonce, 'lead_form_nonce'))) {
+        wp_send_json_error(array('message' => 'Security verification failed. Please refresh the page and try again.'));
         die();
     }
 

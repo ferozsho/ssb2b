@@ -25,28 +25,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitButton = leadForm.querySelector('.lead-form-submit');
             const originalText = submitButton.textContent;
 
-            // Basic client-side validation
+            // Enhanced client-side validation
             const requiredFields = leadForm.querySelectorAll('[required]');
             let hasErrors = false;
 
             requiredFields.forEach(function(field) {
-                if (!field.value.trim()) {
+                // Use our validation function to validate each field
+                if (!validateField(field)) {
                     hasErrors = true;
-                    field.style.borderColor = '#e74c3c';
-                    field.classList.add('error');
-                } else {
-                    field.style.borderColor = '#e1e1e1';
-                    field.classList.remove('error');
                 }
             });
 
             // Validate email format
             const emailField = leadForm.querySelector('#lead_email');
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (emailField && !emailRegex.test(emailField.value)) {
+            if (emailField && emailField.value && !emailRegex.test(emailField.value)) {
                 hasErrors = true;
                 emailField.style.borderColor = '#e74c3c';
                 emailField.classList.add('error');
+                emailField.classList.remove('valid');
+                showFieldError(emailField, 'Please enter a valid email address.');
             }
 
             // Validate website URL if provided
@@ -93,7 +91,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create FormData object
             const formData = new FormData(leadForm);
             formData.append('action', 'lead_form_submit');
-            formData.append('nonce', leadFormData.nonce);
+
+            // Add nonce to formData from the hidden field if it exists, or use the localized one
+            const nonceField = leadForm.querySelector('input[name="lead_form_nonce"]');
+            if (nonceField) {
+                formData.append('nonce', nonceField.value);
+            } else {
+                formData.append('nonce', leadFormData.nonce);
+            }
 
             console.log('Submitting form with data:', Object.fromEntries(formData.entries()));
 
@@ -161,6 +166,23 @@ document.addEventListener('DOMContentLoaded', function() {
      * Field Enhancements
      */
     function initFieldEnhancements() {
+        // Add validation to all required fields
+        const requiredFields = leadForm.querySelectorAll('[required]');
+        requiredFields.forEach(function(field) {
+            field.addEventListener('blur', function() {
+                validateField(field);
+            });
+
+            // For non-checkbox/radio fields, also check as they type
+            if (field.type !== 'checkbox' && field.type !== 'radio') {
+                field.addEventListener('input', function() {
+                    if (field.classList.contains('error')) {
+                        validateField(field);
+                    }
+                });
+            }
+        });
+
         // Real-time validation for email field
         const emailField = leadForm.querySelector('#lead_email');
         if (emailField) {
@@ -169,11 +191,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (this.value && !emailRegex.test(this.value)) {
                     this.style.borderColor = '#e74c3c';
                     this.classList.add('error');
+                    this.classList.remove('valid');
                     showFieldError(this, 'Please enter a valid email address.');
+                } else if (this.value) {
+                    this.style.borderColor = '#2ecc71';
+                    this.classList.remove('error');
+                    this.classList.add('valid');
+                    hideFieldError(this);
                 } else {
                     this.style.borderColor = '#e1e1e1';
                     this.classList.remove('error');
+                    this.classList.remove('valid');
                     hideFieldError(this);
+                }
+            });
+
+            // Also check on input if it was previously marked as error
+            emailField.addEventListener('input', function() {
+                if (this.classList.contains('error') && this.value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (emailRegex.test(this.value)) {
+                        this.style.borderColor = '#2ecc71';
+                        this.classList.remove('error');
+                        this.classList.add('valid');
+                        hideFieldError(this);
+                    }
                 }
             });
         }
@@ -187,14 +229,34 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.value = 'https://' + this.value;
                     }
 
-                    const urlRegex = /^https?:\/\/.+/;
+                    const urlRegex = /^https?:\/\/.+\..+/;
                     if (!urlRegex.test(this.value)) {
                         this.style.borderColor = '#e74c3c';
                         this.classList.add('error');
+                        this.classList.remove('valid');
                         showFieldError(this, 'Please enter a valid website URL.');
                     } else {
-                        this.style.borderColor = '#e1e1e1';
+                        this.style.borderColor = '#2ecc71';
                         this.classList.remove('error');
+                        this.classList.add('valid');
+                        hideFieldError(this);
+                    }
+                } else {
+                    this.style.borderColor = '#e1e1e1';
+                    this.classList.remove('error');
+                    this.classList.remove('valid');
+                    hideFieldError(this);
+                }
+            });
+
+            // Also check on input if it was previously marked as error
+            websiteField.addEventListener('input', function() {
+                if (this.classList.contains('error') && this.value) {
+                    const urlRegex = /^https?:\/\/.+\..+/;
+                    if (urlRegex.test(this.value)) {
+                        this.style.borderColor = '#2ecc71';
+                        this.classList.remove('error');
+                        this.classList.add('valid');
                         hideFieldError(this);
                     }
                 }
@@ -420,6 +482,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
+    // Field validation helper function
+    function validateField(field) {
+        if (field.type === 'checkbox' || field.type === 'radio') {
+            if (!field.checked && field.hasAttribute('required')) {
+                field.classList.add('error');
+                field.classList.remove('valid');
+                field.parentElement.style.color = '#e74c3c';
+                showFieldError(field, 'This field is required.');
+                return false;
+            } else {
+                field.classList.remove('error');
+                if (field.hasAttribute('required')) {
+                    field.classList.add('valid');
+                }
+                field.parentElement.style.color = '';
+                hideFieldError(field);
+                return true;
+            }
+        } else {
+            // For text inputs, email, etc.
+            if (!field.value.trim() && field.hasAttribute('required')) {
+                field.style.borderColor = '#e74c3c';
+                field.classList.add('error');
+                field.classList.remove('valid');
+                showFieldError(field, 'This field is required.');
+                return false;
+            } else {
+                field.classList.remove('error');
+                if (field.value.trim() && field.hasAttribute('required')) {
+                    field.style.borderColor = '#2ecc71';
+                    field.classList.add('valid');
+                } else {
+                    field.style.borderColor = '#e1e1e1';
+                }
+                hideFieldError(field);
+                return true;
+            }
+        }
+    }
+
     // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
@@ -439,6 +541,12 @@ document.addEventListener('DOMContentLoaded', function() {
             100% { opacity: 1; }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         .form-group.focused label {
             color: #3498db;
         }
@@ -455,6 +563,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .lead-form-submit.loading {
             animation: pulse 1.5s infinite;
             position: relative;
+        }
+
+        input.error, select.error, textarea.error {
+            border-color: #e74c3c !important;
+            animation: shake 0.5s ease-in-out;
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        input.valid, select.valid, textarea.valid {
+            border-color: #2ecc71 !important;
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+
+        .field-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            animation: fadeIn 0.3s ease;
         }
     `;
     document.head.appendChild(style);
