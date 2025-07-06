@@ -3,7 +3,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Create a custom list table class for contact form submissions
+global $wpdb;
+$table_name = $wpdb->prefix . 'contact_form_submissions';
+$table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+$count = 0;
+if ($table_exists) {
+    $count = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
+}
+
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
@@ -112,20 +119,10 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
 
         $per_page = 20;
         $current_page = $this->get_pagenum();
-        $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name");
 
-        $this->set_pagination_args(array(
-            'total_items' => $total_items,
-            'per_page' => $per_page,
-            'total_pages' => ceil($total_items / $per_page)
-        ));
-
-        $orderby = !empty($_REQUEST['orderby']) ? sanitize_sql_orderby($_REQUEST['orderby']) : 'created_at';
-        $order = !empty($_REQUEST['order']) ? sanitize_text_field($_REQUEST['order']) : 'DESC';
-
-        $search = isset($_POST['s']) ? sanitize_text_field($_POST['s']) : '';
-
+        $search = isset($_REQUEST['s']) ? sanitize_text_field($_REQUEST['s']) : '';
         $where = '';
+
         if (!empty($search)) {
             $where = $wpdb->prepare(
                 " WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR message LIKE %s OR city LIKE %s OR state LIKE %s OR country LIKE %s OR postal_code LIKE %s",
@@ -140,10 +137,27 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
             );
         }
 
+        $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name $where");
+
+        $this->set_pagination_args(array(
+            'total_items' => $total_items,
+            'per_page' => $per_page,
+            'total_pages' => ceil($total_items / $per_page)
+        ));
+
+        $orderby = !empty($_REQUEST['orderby']) ? sanitize_sql_orderby($_REQUEST['orderby']) : 'created_at';
+        $order = !empty($_REQUEST['order']) ? sanitize_text_field($_REQUEST['order']) : 'DESC';
+
         $sql = "SELECT * FROM $table_name $where ORDER BY $orderby $order LIMIT $per_page";
         $sql .= ' OFFSET ' . ($current_page - 1) * $per_page;
 
         $this->items = $wpdb->get_results($sql, ARRAY_A);
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
     }
 
     protected function get_bulk_actions() {
@@ -183,7 +197,7 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
         if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['submissions'])) {
             $submission_ids = array_map('intval', $_POST['submissions']);
 
-            if (!empty($submission_ids) && check_admin_referer('bulk-contact_submissions')) {
+            if (!empty($submission_ids) && check_admin_referer('bulk-' . $this->_args['plural'])) {
                 foreach ($submission_ids as $id) {
                     $wpdb->delete(
                         $table_name,
@@ -211,7 +225,10 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
 $table = new Contact_Form_Submissions_List_Table();
 $table->process_bulk_action();
 
-// Display notifications
+if (isset($_GET['debug'])) {
+    echo '<div class="notice notice-info"><p>Table exists: ' . ($table_exists ? 'Yes' : 'No') . ' | Records count: ' . $count . '</p></div>';
+}
+
 if (isset($_GET['deleted']) && $_GET['deleted'] == '1') {
     echo '<div class="updated"><p>Submission deleted successfully.</p></div>';
 }
@@ -223,8 +240,31 @@ if (isset($_GET['bulk_deleted'])) {
 ?>
 
 <style>
+table.wp-list-table {
+    width: 100%;
+    clear: both;
+    margin-top: 20px;
+}
+.wp-list-table .column-cb {
+    width: 2%;
+}
+.wp-list-table .column-full_name {
+    width: 15%;
+}
+.wp-list-table .column-email {
+    width: 15%;
+}
+.wp-list-table .column-phone {
+    width: 12%;
+}
+.wp-list-table .column-message {
+    width: 25%;
+}
 .wp-list-table .column-location {
     width: 15%;
+}
+.wp-list-table .column-created_at {
+    width: 12%;
 }
 
 #location-details {
@@ -251,13 +291,33 @@ if (isset($_GET['bulk_deleted'])) {
 <div class="wrap">
     <h1 class="wp-heading-inline">Contact Form Submissions</h1>
 
+    <hr class="wp-header-end">
+
+    <?php if ($count == 0): ?>
+        <div class="notice notice-warning">
+            <p>No contact submissions found. Once customers submit the contact form, their submissions will appear here.</p>
+        </div>
+    <?php endif; ?>
+
     <form method="post">
         <?php
         $table->prepare_items();
+        wp_nonce_field('bulk-' . $table->_args['plural']);
         $table->search_box('Search Submissions', 'search-submissions');
         $table->display();
         ?>
     </form>
+
+    <?php if (isset($_GET['debug'])): ?>
+    <div style="background: #fff; border: 1px solid #ccc; padding: 15px; margin-top: 20px;">
+        <h3>Debug Information</h3>
+        <p><strong>Items found:</strong> <?php echo count($table->items); ?></p>
+        <?php if (!empty($table->items)): ?>
+            <p><strong>Sample item data:</strong></p>
+            <pre><?php print_r($table->items[0]); ?></pre>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal for viewing submission details -->
@@ -308,6 +368,7 @@ jQuery(document).ready(function($) {
         $.ajax({
             url: ajaxurl,
             type: 'POST',
+            dataType: 'json',
             data: {
                 action: 'get_submission_details',
                 submission_id: submissionId,
