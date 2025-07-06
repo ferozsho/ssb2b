@@ -36,11 +36,13 @@ get_header();
 
                         <form id="contact-form" class="contact-form">
                             <div class="form-group">
+                                <label for="first-name">First Name</label>
                                 <input type="text" id="first-name" name="first-name" class="form-control" placeholder="First Name *" required>
                                 <span class="error-message" id="first-name-error"><i class="error-icon">⚠</i> This field is required.</span>
                             </div>
 
                             <div class="form-group">
+                                <label for="last-name">Last Name</label>
                                 <input type="text" id="last-name" name="last-name" class="form-control" placeholder="Last Name *" required>
                                 <span class="error-message" id="last-name-error"><i class="error-icon">⚠</i> This field is required.</span>
                             </div>
@@ -136,11 +138,13 @@ get_header();
                             </div>
 
                             <div class="form-group">
+                                <label for="email">E-mail</label>
                                 <input type="email" id="email" name="email" class="form-control" placeholder="E-mail *" required>
                                 <span class="error-message" id="email-error"><i class="error-icon">⚠</i> Please enter a valid work email address.</span>
                             </div>
 
                             <div class="form-group">
+                                <label for="message">Message</label>
                                 <textarea id="message" name="message" class="form-control" rows="5" placeholder="Message *" required></textarea>
                                 <span class="error-message" id="message-error"><i class="error-icon">⚠</i> This field is required.</span>
                             </div>

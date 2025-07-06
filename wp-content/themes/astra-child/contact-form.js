@@ -108,16 +108,9 @@
         function initCountryCodeDropdown() {
             const countryCodeDropdown = $('#country-code');
 
-            // Handle dropdown changes - adjust UI if needed
+            // Handle dropdown changes if needed
             countryCodeDropdown.on('change', function() {
                 // You could add special handling for different countries if needed
-            });
-
-            // Create a clickable area for the dropdown that shows all countries
-            $('.country-code-dropdown').click(function(e) {
-                if (e.target !== countryCodeDropdown[0]) {
-                    countryCodeDropdown.focus();
-                }
             });
         }
 

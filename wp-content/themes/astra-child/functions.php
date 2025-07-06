@@ -446,7 +446,7 @@ function handle_contact_form_submit() {
     $auto_reply_body .= "We received the following information:\n";
     $auto_reply_body .= "Name: " . $first_name . " " . $last_name . "\n";
     $auto_reply_body .= "Email: " . $email . "\n";
-    $auto_reply_body .= "Phone: " . $phone . "\n\n";
+    $auto_reply_body .= "Phone: " . $full_phone . "\n\n";
     $auto_reply_body .= "Here's a copy of your message:\n";
     $auto_reply_body .= "------------------------------\n";
     $auto_reply_body .= $message . "\n";
@@ -474,7 +474,7 @@ function handle_contact_form_submit() {
             'first_name' => $first_name,
             'last_name' => $last_name,
             'email' => $email,
-            'phone' => $phone,
+            'phone' => $full_phone, // Save the full phone number with country code
             'message' => $message,
             'ip_address' => $_SERVER['REMOTE_ADDR'],
             'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
@@ -511,7 +511,7 @@ function create_form_submissions_tables() {
         first_name varchar(100) NOT NULL,
         last_name varchar(100) NOT NULL,
         email varchar(100) NOT NULL,
-        phone varchar(50) NOT NULL,
+        phone varchar(100) NOT NULL, /* Increased size to store country code + phone number */
         message text NOT NULL,
         ip_address varchar(100) NOT NULL,
         user_agent text NOT NULL,

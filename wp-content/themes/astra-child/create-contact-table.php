@@ -18,20 +18,18 @@ global $wpdb;
 $charset_collate = $wpdb->get_charset_collate();
 
 // Contact form submissions table
-$contact_table = $wpdb->prefix . 'contact_form_submissions';
-
-$sql_contact = "CREATE TABLE IF NOT EXISTS $contact_table (
-    id bigint(20) NOT NULL AUTO_INCREMENT,
-    first_name varchar(100) NOT NULL,
-    last_name varchar(100) NOT NULL,
-    email varchar(100) NOT NULL,
-    phone varchar(50) NOT NULL,
-    message text NOT NULL,
-    ip_address varchar(100) NOT NULL,
-    user_agent text NOT NULL,
-    created_at datetime NOT NULL,
-    PRIMARY KEY  (id)
-) $charset_collate;";
+$contact_table = $wpdb->prefix . 'contact_form_submissions';    $sql_contact = "CREATE TABLE IF NOT EXISTS $contact_table (
+        id bigint(20) NOT NULL AUTO_INCREMENT,
+        first_name varchar(100) NOT NULL,
+        last_name varchar(100) NOT NULL,
+        email varchar(100) NOT NULL,
+        phone varchar(100) NOT NULL, /* Increased size to store country code + phone number */
+        message text NOT NULL,
+        ip_address varchar(100) NOT NULL,
+        user_agent text NOT NULL,
+        created_at datetime NOT NULL,
+        PRIMARY KEY  (id)
+    ) $charset_collate;";
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 $result = dbDelta($sql_contact);
