@@ -22,6 +22,7 @@
         const submitButton = $('#submit-button');
         const loadingSpinner = $('.loading-spinner');
         const successMessage = $('.contact-form-success');
+        const submitAnother = $('#submit-another');
 
         // Form validation
         function validateForm() {
@@ -77,6 +78,12 @@
             Object.values(errorMessages).forEach(error => error.text(''));
         }
 
+        // Event handler for "Submit Another Message" button
+        submitAnother.on('click', function() {
+            successMessage.hide();
+            contactForm.fadeIn();
+        });
+
         // Form submission
         contactForm.on('submit', function(e) {
             e.preventDefault();
@@ -96,9 +103,7 @@
                 email: formFields.email.val().trim(),
                 message: formFields.message.val().trim(),
                 nonce: $('#contact_form_nonce').val()
-            };
-
-            $.ajax({
+            };            $.ajax({
                 url: contactFormData.ajaxurl,
                 type: 'POST',
                 data: formData,
@@ -107,16 +112,13 @@
                     loadingSpinner.hide();
 
                     if (response.success) {
+                        // Show success message
                         contactForm.hide();
                         successMessage.fadeIn();
                         resetForm();
 
-                        // Reset form after 5 seconds
-                        setTimeout(function() {
-                            successMessage.fadeOut(function() {
-                                contactForm.fadeIn();
-                            });
-                        }, 5000);
+                        // Don't automatically hide the success message
+                        // User can close it by clicking submit another message
                     } else {
                         alert(response.data.message || 'Something went wrong. Please try again.');
                     }

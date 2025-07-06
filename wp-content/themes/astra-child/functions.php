@@ -419,6 +419,10 @@ function handle_contact_form_submit() {
     $auto_reply_subject = 'Thank you for contacting ' . $site_name;
     $auto_reply_body = "Dear " . $first_name . ",\n\n";
     $auto_reply_body .= "Thank you for contacting us. We have received your message and will get back to you shortly.\n\n";
+    $auto_reply_body .= "We received the following information:\n";
+    $auto_reply_body .= "Name: " . $first_name . " " . $last_name . "\n";
+    $auto_reply_body .= "Email: " . $email . "\n";
+    $auto_reply_body .= "Phone: " . $phone . "\n\n";
     $auto_reply_body .= "Here's a copy of your message:\n";
     $auto_reply_body .= "------------------------------\n";
     $auto_reply_body .= $message . "\n";

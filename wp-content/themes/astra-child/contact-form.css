@@ -1,32 +1,71 @@
-.contact-form-container {
+.contact-section {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
+}
+
+.contact-section h1.entry-title {
+    margin-bottom: 30px;
+    text-align: left;
+    font-size: 25px;
+}
+
+.contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+    gap: 30px;
+}
+
+.map-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.google-map {
+    height: 100%;
+    min-height: 500px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .contact-form-wrapper {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    padding: 40px;
+    padding: 20px;
+    height: 100%;
 }
 
-.contact-form-wrapper h1 {
+.contact-form-wrapper h2 {
+    margin-bottom: 10px;
+    color: #0274be;
+    font-size: 18px;
+}
+
+.contact-form-wrapper h3 {
     margin-bottom: 30px;
-    text-align: center;
+    font-size: 24px;
 }
 
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 -15px;
+.contact-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
 .form-group {
-    flex: 1;
-    padding: 0 15px;
-    margin-bottom: 25px;
     position: relative;
+}
+
+.form-group:nth-child(5),
+.form-group:nth-child(6) {
+    grid-column: 1 / -1;
 }
 
 .form-control {
@@ -76,6 +115,22 @@ label {
     background-color: #025a93;
 }
 
+.submit-another {
+    background-color: #0274be;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.submit-another:hover {
+    background-color: #025a93;
+}
+
 .loading-spinner {
     display: inline-block;
     margin-left: 15px;
@@ -116,4 +171,52 @@ label {
     .contact-form-wrapper {
         padding: 25px;
     }
+}
+
+.contact-info-container {
+    margin-top: 50px;
+}
+
+.contact-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.info-box {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    min-width: 300px;
+}
+
+.info-box h3 {
+    color: #0274be;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.info-box p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.info-box a {
+    color: #0274be;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.info-box a:hover {
+    color: #025a93;
+}
+
+.message-copy {
+    background-color: #f9f9f9;
+    border-left: 4px solid #0274be;
+    padding: 15px;
+    margin: 15px 0;
+    font-style: italic;
 }
