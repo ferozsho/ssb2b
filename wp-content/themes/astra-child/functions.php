@@ -17,9 +17,7 @@ define( 'CHILD_THEME_SS_ENTERPRISES_B2B_VERSION', '1.0.0' );
  * Enqueue styles
  */
 function child_enqueue_styles() {
-
 	wp_enqueue_style( 'ss-enterprises-b2b-theme-css', get_stylesheet_directory_uri() . '/style.css', array('astra-theme-css'), CHILD_THEME_SS_ENTERPRISES_B2B_VERSION, 'all' );
-
 }
 
 /**
@@ -31,7 +29,7 @@ function child_enqueue_scripts() {
         wp_enqueue_script(
             'lead-form-js',
             get_stylesheet_directory_uri() . '/js/lead-form.js',
-            array(),
+            array('jquery'),
             CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
             true
         );
@@ -41,6 +39,32 @@ function child_enqueue_scripts() {
 add_action('wp_enqueue_scripts', 'child_enqueue_scripts');
 
 add_action( 'wp_enqueue_scripts', 'child_enqueue_styles', 15 );
+
+function fix_jquery_loading() {
+    if (!is_admin()) {
+        wp_deregister_script('jquery');
+        wp_deregister_script('jquery-core');
+        wp_deregister_script('jquery-migrate');
+
+        wp_register_script('jquery-core', includes_url('/js/jquery/jquery.min.js'), array(), null, false);
+        wp_register_script('jquery-migrate', includes_url('/js/jquery/jquery-migrate.min.js'), array('jquery-core'), null, false);
+        wp_register_script('jquery', false, array('jquery-core', 'jquery-migrate'), null, false);
+
+        wp_enqueue_script('jquery');
+    }
+}
+add_action('wp_enqueue_scripts', 'fix_jquery_loading', 1);
+
+function fix_astra_script_dependencies() {
+    if (!is_admin()) {
+        global $wp_scripts;
+
+        if (isset($wp_scripts->registered['astra-theme-js'])) {
+            $wp_scripts->registered['astra-theme-js']->deps = array('jquery');
+        }
+    }
+}
+add_action('wp_print_scripts', 'fix_astra_script_dependencies', 1);
 
 /**
  * Include Geolocation Helper
@@ -53,13 +77,13 @@ require_once get_stylesheet_directory() . '/includes/geolocation.php';
 function handle_lead_generation_form() {
     // Check if form was submitted
     if (isset($_POST['submit_lead_form'])) {
-        
+
         // Verify nonce for security
         if (!wp_verify_nonce($_POST['lead_form_nonce_field'], 'lead_form_nonce')) {
             wp_redirect(add_query_arg('lead_form_error', '1', get_permalink()));
             exit;
         }
-        
+
         // Sanitize and validate form data
         $first_name = sanitize_text_field($_POST['lead_first_name']);
         $last_name = sanitize_text_field($_POST['lead_last_name']);
@@ -79,7 +103,7 @@ function handle_lead_generation_form() {
         $how_heard = sanitize_text_field($_POST['lead_how_heard']);
         $consent = isset($_POST['lead_consent']) ? 1 : 0;
         $marketing_consent = isset($_POST['lead_marketing_consent']) ? 1 : 0;
-        
+
         // Location data
         $city = sanitize_text_field($_POST['lead_city']);
         $state = sanitize_text_field($_POST['lead_state']);
@@ -90,25 +114,25 @@ function handle_lead_generation_form() {
         $timezone = sanitize_text_field($_POST['lead_timezone']);
         $ip_address = sanitize_text_field($_POST['lead_ip_address']);
         $location_source = sanitize_text_field($_POST['lead_location_source']);
-        
+
         // Basic validation
         if (empty($first_name) || empty($last_name) || empty($email) || empty($company) || empty($subject) || empty($message) || !$consent) {
             wp_redirect(add_query_arg('lead_form_error', '1', get_permalink()));
             exit;
         }
-        
+
         if (!is_email($email)) {
             wp_redirect(add_query_arg('lead_form_error', '1', get_permalink()));
             exit;
         }
-        
+
         // Get admin email or use default
         $admin_email = get_option('admin_email');
         $site_name = get_bloginfo('name');
-        
+
         // Prepare email content
         $email_subject = '[' . $site_name . '] New Lead: ' . $subject;
-        
+
         $email_body = "New lead submission from " . $site_name . "\n\n";
         $email_body .= "=== PERSONAL INFORMATION ===\n";
         $email_body .= "Name: " . $first_name . " " . $last_name . "\n";
@@ -116,20 +140,20 @@ function handle_lead_generation_form() {
         $email_body .= "Phone: " . $phone . "\n";
         $email_body .= "Job Title: " . $job_title . "\n";
         $email_body .= "Department: " . $department . "\n\n";
-        
+
         $email_body .= "=== COMPANY INFORMATION ===\n";
         $email_body .= "Company: " . $company . "\n";
         $email_body .= "Website: " . $website . "\n";
         $email_body .= "Industry: " . $industry . "\n";
         $email_body .= "Company Size: " . $company_size . "\n\n";
-        
+
         $email_body .= "=== LOCATION INFORMATION ===\n";
         $email_body .= "City: " . $city . "\n";
         $email_body .= "State/Region: " . $state . "\n";
         $email_body .= "Country: " . $country . "\n";
         $email_body .= "ZIP/Postal Code: " . $postal_code . "\n";
         $email_body .= "Location Source: " . $location_source . "\n\n";
-        
+
         $email_body .= "=== INQUIRY DETAILS ===\n";
         $email_body .= "Subject: " . $subject . "\n";
         $email_body .= "Area of Interest: " . $interest . "\n";
@@ -137,9 +161,9 @@ function handle_lead_generation_form() {
         $email_body .= "Timeline: " . $timeline . "\n";
         $email_body .= "How they heard about us: " . $how_heard . "\n";
         $email_body .= "Marketing consent: " . ($marketing_consent ? 'Yes' : 'No') . "\n\n";
-        
+
         $email_body .= "MESSAGE:\n" . $message . "\n\n";
-        
+
         $email_body .= "=== TECHNICAL DETAILS ===\n";
         $email_body .= "Submitted on: " . date('Y-m-d H:i:s') . "\n";
         $email_body .= "IP Address: " . $ip_address . "\n";
@@ -149,16 +173,16 @@ function handle_lead_generation_form() {
         if ($timezone) {
             $email_body .= "Timezone: " . $timezone . "\n";
         }
-        
+
         // Email headers
         $headers = array();
         $headers[] = 'From: ' . $site_name . ' <' . $admin_email . '>';
         $headers[] = 'Reply-To: ' . $first_name . ' ' . $last_name . ' <' . $email . '>';
         $headers[] = 'Content-Type: text/plain; charset=UTF-8';
-        
+
         // Send email using wp_mail (WP Mail SMTP will handle the actual sending)
         $sent = wp_mail($admin_email, $email_subject, $email_body, $headers);
-        
+
         // Send auto-reply to customer
         $auto_reply_subject = 'Thank you for contacting ' . $site_name;
         $auto_reply_body = "Dear " . $first_name . ",\n\n";
@@ -170,13 +194,13 @@ function handle_lead_generation_form() {
         $auto_reply_body .= "We appreciate your interest and will respond within 24 hours during business days.\n\n";
         $auto_reply_body .= "Best regards,\n";
         $auto_reply_body .= $site_name . " Team\n";
-        
+
         $auto_reply_headers = array();
         $auto_reply_headers[] = 'From: ' . $site_name . ' <' . $admin_email . '>';
         $auto_reply_headers[] = 'Content-Type: text/plain; charset=UTF-8';
-        
+
         wp_mail($email, $auto_reply_subject, $auto_reply_body, $auto_reply_headers);
-        
+
         // Store lead in database (optional)
         $lead_data = array(
             'first_name' => $first_name,
@@ -207,7 +231,7 @@ function handle_lead_generation_form() {
             'ip_address' => $ip_address,
             'location_source' => $location_source
         );
-        
+
         // Save to custom table or post meta (for now, we'll save as custom post type)
         $lead_post = array(
             'post_title' => 'Lead: ' . $first_name . ' ' . $last_name . ' (' . $company . ')',
@@ -216,9 +240,9 @@ function handle_lead_generation_form() {
             'post_type' => 'lead_submission',
             'meta_input' => $lead_data
         );
-        
+
         wp_insert_post($lead_post);
-        
+
         // Redirect with success message
         if ($sent) {
             wp_redirect(add_query_arg('lead_form_sent', '1', get_permalink()));
