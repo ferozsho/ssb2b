@@ -3,6 +3,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Debug - Check if the table exists and has records
+global $wpdb;
+$table_name = $wpdb->prefix . 'lead_forms';
+$table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+$count = 0;
+if ($table_exists) {
+    $count = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
+}
+
 // Create a custom list table class for lead form submissions
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
@@ -199,7 +208,7 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
         if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['submissions'])) {
             $submission_ids = array_map('intval', $_POST['submissions']);
 
-            if (!empty($submission_ids) && check_admin_referer('bulk-lead_submissions')) {
+            if (!empty($submission_ids) && check_admin_referer('bulk-' . $this->_args['plural'])) {
                 foreach ($submission_ids as $id) {
                     $wpdb->delete(
                         $table_name,
@@ -227,6 +236,11 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
 $table = new Lead_Form_Submissions_List_Table();
 $table->process_bulk_action();
 
+// Display debug info if needed
+if (isset($_GET['debug'])) {
+    echo '<div class="notice notice-info"><p>Table exists: ' . ($table_exists ? 'Yes' : 'No') . ' | Records count: ' . $count . '</p></div>';
+}
+
 // Display notifications
 if (isset($_GET['deleted']) && $_GET['deleted'] == '1') {
     echo '<div class="updated"><p>Lead submission deleted successfully.</p></div>';
@@ -239,6 +253,23 @@ if (isset($_GET['bulk_deleted'])) {
 ?>
 
 <style>
+table.wp-list-table {
+    width: 100%;
+    clear: both;
+    margin-top: 20px;
+}
+.wp-list-table .column-cb {
+    width: 2%;
+}
+.wp-list-table .column-full_name {
+    width: 15%;
+}
+.wp-list-table .column-email {
+    width: 15%;
+}
+.wp-list-table .column-phone {
+    width: 10%;
+}
 .wp-list-table .column-company,
 .wp-list-table .column-subject {
     width: 15%;
@@ -246,6 +277,9 @@ if (isset($_GET['bulk_deleted'])) {
 .wp-list-table .column-interest,
 .wp-list-table .column-location {
     width: 12%;
+}
+.wp-list-table .column-created_at {
+    width: 10%;
 }
 #submission-details h3 {
     margin-top: 20px;
@@ -281,9 +315,18 @@ if (isset($_GET['bulk_deleted'])) {
 <div class="wrap">
     <h1 class="wp-heading-inline">Lead Form Submissions</h1>
 
+    <hr class="wp-header-end">
+
+    <?php if ($count == 0): ?>
+        <div class="notice notice-warning">
+            <p>No lead submissions found. Once customers submit the lead form, their submissions will appear here.</p>
+        </div>
+    <?php endif; ?>
+
     <form method="post">
         <?php
         $table->prepare_items();
+        wp_nonce_field('bulk-' . $table->_args['plural']);
         $table->search_box('Search Leads', 'search-leads');
         $table->display();
         ?>
@@ -364,6 +407,7 @@ jQuery(document).ready(function($) {
         $.ajax({
             url: ajaxurl,
             type: 'POST',
+            dataType: 'json',
             data: {
                 action: 'get_lead_submission_details',
                 submission_id: submissionId,
