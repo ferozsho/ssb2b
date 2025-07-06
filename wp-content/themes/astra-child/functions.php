@@ -465,18 +465,24 @@ function handle_contact_form_submit() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'contact_form_submissions';
 
-    $data = array(
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'email' => $email,
-        'phone' => $phone,
-        'message' => $message,
-        'ip_address' => $_SERVER['REMOTE_ADDR'],
-        'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-        'created_at' => current_time('mysql')
-    );
+    // Check if table exists
+    $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
 
-    $wpdb->insert($table_name, $data);
+    // If table exists, store the data
+    if ($table_exists) {
+        $data = array(
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'email' => $email,
+            'phone' => $phone,
+            'message' => $message,
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+            'created_at' => current_time('mysql')
+        );
+
+        $wpdb->insert($table_name, $data);
+    }
 
     // Send response
     if ($sent) {
