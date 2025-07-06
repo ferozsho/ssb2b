@@ -53,7 +53,7 @@ get_header(); ?>
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_first_name">First Name *</label>
-                                            <input type="text" id="lead_first_name" name="lead_first_name" >
+                                            <input type="text" id="lead_first_name" name="lead_first_name" required>
                                         </div>
                                         <div class="form-group half-width">
                                             <label for="lead_last_name">Last Name *</label>
