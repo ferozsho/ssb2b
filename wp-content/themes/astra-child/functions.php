@@ -404,6 +404,17 @@ function handle_contact_form_submit() {
     $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
 
+    // Geolocation data
+    $city = isset($_POST['city']) ? sanitize_text_field($_POST['city']) : '';
+    $state = isset($_POST['state']) ? sanitize_text_field($_POST['state']) : '';
+    $country = isset($_POST['country']) ? sanitize_text_field($_POST['country']) : '';
+    $postal_code = isset($_POST['postal_code']) ? sanitize_text_field($_POST['postal_code']) : '';
+    $latitude = isset($_POST['latitude']) ? sanitize_text_field($_POST['latitude']) : '';
+    $longitude = isset($_POST['longitude']) ? sanitize_text_field($_POST['longitude']) : '';
+    $timezone = isset($_POST['timezone']) ? sanitize_text_field($_POST['timezone']) : '';
+    $ip_address = isset($_POST['ip_address']) ? sanitize_text_field($_POST['ip_address']) : $_SERVER['REMOTE_ADDR'];
+    $location_source = isset($_POST['location_source']) ? sanitize_text_field($_POST['location_source']) : 'form';
+
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($message)) {
         wp_send_json_error(array('message' => 'Please fill all required fields'));
@@ -476,7 +487,15 @@ function handle_contact_form_submit() {
             'email' => $email,
             'phone' => $full_phone, // Save the full phone number with country code
             'message' => $message,
-            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'city' => $city,
+            'state' => $state,
+            'country' => $country,
+            'postal_code' => $postal_code,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'timezone' => $timezone,
+            'ip_address' => $ip_address,
+            'location_source' => $location_source,
             'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
             'created_at' => current_time('mysql')
         );
@@ -511,8 +530,16 @@ function create_form_submissions_tables() {
         first_name varchar(100) NOT NULL,
         last_name varchar(100) NOT NULL,
         email varchar(100) NOT NULL,
-        phone varchar(100) NOT NULL, /* Increased size to store country code + phone number */
+        phone varchar(100) NOT NULL,
         message text NOT NULL,
+        city varchar(100) NOT NULL,
+        state varchar(100) NOT NULL,
+        country varchar(100) NOT NULL,
+        postal_code varchar(50) NOT NULL,
+        latitude varchar(50) NOT NULL,
+        longitude varchar(50) NOT NULL,
+        timezone varchar(100) NOT NULL,
+        location_source varchar(50) NOT NULL,
         ip_address varchar(100) NOT NULL,
         user_agent text NOT NULL,
         created_at datetime NOT NULL,

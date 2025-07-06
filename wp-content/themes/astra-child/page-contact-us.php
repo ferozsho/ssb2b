@@ -34,6 +34,10 @@ get_header();
                             </div>
                         </div>
 
+                        <?php
+                        // Get user's location data for auto-filling
+                        $location_data = SSB2B_Geolocation::get_location_by_ip();
+                        ?>
                         <form id="contact-form" class="contact-form">
                             <div class="form-group">
                                 <label for="first-name">First Name</label>
@@ -148,6 +152,17 @@ get_header();
                                 <textarea id="message" name="message" class="form-control" rows="5" placeholder="Message *" required></textarea>
                                 <span class="error-message" id="message-error"><i class="error-icon">⚠</i> This field is required.</span>
                             </div>
+
+                            <!-- Hidden geolocation fields -->
+                            <input type="hidden" id="city" name="city" value="<?php echo esc_attr($location_data['city']); ?>">
+                            <input type="hidden" id="state" name="state" value="<?php echo esc_attr($location_data['state']); ?>">
+                            <input type="hidden" id="country" name="country" value="<?php echo esc_attr($location_data['country']); ?>">
+                            <input type="hidden" id="postal_code" name="postal_code" value="<?php echo esc_attr($location_data['postal_code']); ?>">
+                            <input type="hidden" id="latitude" name="latitude" value="<?php echo esc_attr($location_data['latitude']); ?>">
+                            <input type="hidden" id="longitude" name="longitude" value="<?php echo esc_attr($location_data['longitude']); ?>">
+                            <input type="hidden" id="timezone" name="timezone" value="<?php echo esc_attr($location_data['timezone']); ?>">
+                            <input type="hidden" id="ip_address" name="ip_address" value="<?php echo esc_attr($location_data['ip']); ?>">
+                            <input type="hidden" id="location_source" name="location_source" value="<?php echo esc_attr($location_data['source']); ?>">
 
                             <div class="form-group">
                                 <?php wp_nonce_field('contact_form_submit', 'contact_form_nonce'); ?>

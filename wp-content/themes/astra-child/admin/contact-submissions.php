@@ -25,6 +25,7 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
             'email' => 'Email',
             'phone' => 'Phone',
             'message' => 'Message',
+            'location' => 'Location',
             'created_at' => 'Date'
         );
 
@@ -35,6 +36,7 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
         $sortable_columns = array(
             'full_name' => array('last_name', true),
             'email' => array('email', false),
+            'location' => array('country', false),
             'created_at' => array('created_at', true)
         );
 
@@ -91,6 +93,18 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
         );
     }
 
+    protected function column_location($item) {
+        $location_parts = [];
+
+        if (!empty($item['city'])) $location_parts[] = esc_html($item['city']);
+        if (!empty($item['state'])) $location_parts[] = esc_html($item['state']);
+        if (!empty($item['country'])) $location_parts[] = esc_html($item['country']);
+
+        $location = !empty($location_parts) ? implode(', ', $location_parts) : 'Not available';
+
+        return $location;
+    }
+
     public function prepare_items() {
         global $wpdb;
 
@@ -114,7 +128,11 @@ class Contact_Form_Submissions_List_Table extends WP_List_Table {
         $where = '';
         if (!empty($search)) {
             $where = $wpdb->prepare(
-                " WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR message LIKE %s",
+                " WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR message LIKE %s OR city LIKE %s OR state LIKE %s OR country LIKE %s OR postal_code LIKE %s",
+                '%' . $wpdb->esc_like($search) . '%',
+                '%' . $wpdb->esc_like($search) . '%',
+                '%' . $wpdb->esc_like($search) . '%',
+                '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%',
@@ -204,6 +222,32 @@ if (isset($_GET['bulk_deleted'])) {
 }
 ?>
 
+<style>
+.wp-list-table .column-location {
+    width: 15%;
+}
+
+#location-details {
+    border-left: 4px solid #46b450;
+}
+
+#location-details h3 {
+    color: #2c3338;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+#location-details p {
+    margin: 5px 0;
+}
+
+@media screen and (max-width: 782px) {
+    .wp-list-table .column-location {
+        display: none;
+    }
+}
+</style>
+
 <div class="wrap">
     <h1 class="wp-heading-inline">Contact Form Submissions</h1>
 
@@ -229,6 +273,18 @@ if (isset($_GET['bulk_deleted'])) {
                 <p><strong>Phone:</strong> <span id="modal-phone"></span></p>
                 <p><strong>Date:</strong> <span id="modal-date"></span></p>
                 <p><strong>IP Address:</strong> <span id="modal-ip"></span></p>
+
+                <div id="location-details" style="background: #f8f8f8; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                    <h3 style="margin-top: 0;">Location Information</h3>
+                    <p><strong>City:</strong> <span id="modal-city">Not available</span></p>
+                    <p><strong>State:</strong> <span id="modal-state">Not available</span></p>
+                    <p><strong>Country:</strong> <span id="modal-country">Not available</span></p>
+                    <p><strong>Postal Code:</strong> <span id="modal-postal-code">Not available</span></p>
+                    <p><strong>Latitude/Longitude:</strong> <span id="modal-lat-long">Not available</span></p>
+                    <p><strong>Timezone:</strong> <span id="modal-timezone">Not available</span></p>
+                    <p><strong>Source:</strong> <span id="modal-location-source">Not available</span></p>
+                </div>
+
                 <p><strong>Message:</strong></p>
                 <div id="modal-message" style="background: #f9f9f9; padding: 15px; border-left: 4px solid #0073aa; margin-top: 10px;"></div>
             </div>
@@ -266,6 +322,22 @@ jQuery(document).ready(function($) {
                     $('#modal-date').text(data.formatted_date);
                     $('#modal-ip').text(data.ip_address);
                     $('#modal-message').html(data.message.replace(/\n/g, '<br>'));
+
+                    // Display geolocation data
+                    $('#modal-city').text(data.city || 'Not available');
+                    $('#modal-state').text(data.state || 'Not available');
+                    $('#modal-country').text(data.country || 'Not available');
+                    $('#modal-postal-code').text(data.postal_code || 'Not available');
+
+                    // Display latitude/longitude if available
+                    if (data.latitude && data.longitude) {
+                        $('#modal-lat-long').text(data.latitude + ', ' + data.longitude);
+                    } else {
+                        $('#modal-lat-long').text('Not available');
+                    }
+
+                    $('#modal-timezone').text(data.timezone || 'Not available');
+                    $('#modal-location-source').text(data.location_source || 'Not available');
 
                     $('#loading').hide();
                     $('#submission-data').show();

@@ -176,6 +176,15 @@
                 phone: formFields.phone.val().trim(),
                 email: formFields.email.val().trim(),
                 message: formFields.message.val().trim(),
+                city: $('#city').val(),
+                state: $('#state').val(),
+                country: $('#country').val(),
+                postal_code: $('#postal_code').val(),
+                latitude: $('#latitude').val(),
+                longitude: $('#longitude').val(),
+                timezone: $('#timezone').val(),
+                ip_address: $('#ip_address').val(),
+                location_source: $('#location_source').val(),
                 nonce: $('#contact_form_nonce').val()
             };            submitButton.text('Submitting...');
 
