@@ -42,7 +42,7 @@ get_header(); ?>
                             $location_data = SSB2B_Geolocation::get_location_by_ip();
                             ?>
 
-                            <form id="lead-generation-form" class="lead-form" method="post">
+                            <form id="lead-generation-form" class="lead-form" method="post" novalidate>
                                 <div id="form-response-container"></div>
                                 <input type="hidden" name="lead_form_nonce" value="<?php echo esc_attr(wp_create_nonce('lead_form_nonce')); ?>" />
 
