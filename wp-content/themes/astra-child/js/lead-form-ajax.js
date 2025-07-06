@@ -81,13 +81,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Disable all fields and show loading state
-            setFormDisabled(true);
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            submitButton.classList.add('loading');
-            submitButton.style.opacity = '0.7';
-
             // Create FormData object
             const formData = new FormData(leadForm);
             formData.append('action', 'lead_form_submit');
@@ -99,6 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 formData.append('nonce', leadFormData.nonce);
             }
+
+            // Disable all fields and show loading state
+            setFormDisabled(true);
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            submitButton.classList.add('loading');
+            submitButton.style.opacity = '0.7';
 
             console.log('Submitting form with data:', Object.fromEntries(formData.entries()));
 
