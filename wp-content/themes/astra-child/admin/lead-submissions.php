@@ -134,7 +134,6 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
         $per_page = 20;
         $current_page = $this->get_pagenum();
 
-        // Filter by search term if present
         $search = isset($_REQUEST['s']) ? sanitize_text_field($_REQUEST['s']) : '';
         $where = '';
 
@@ -153,7 +152,6 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
             );
         }
 
-        // Count total items for pagination
         $total_items = $wpdb->get_var("SELECT COUNT(id) FROM $table_name $where");
 
         $this->set_pagination_args(array(
@@ -169,6 +167,12 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
         $sql .= ' OFFSET ' . ($current_page - 1) * $per_page;
 
         $this->items = $wpdb->get_results($sql, ARRAY_A);
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
     }
 
     protected function get_bulk_actions() {
@@ -331,6 +335,17 @@ table.wp-list-table {
         $table->display();
         ?>
     </form>
+
+    <?php if (isset($_GET['debug'])): ?>
+    <div style="background: #fff; border: 1px solid #ccc; padding: 15px; margin-top: 20px;">
+        <h3>Debug Information</h3>
+        <p><strong>Items found:</strong> <?php echo count($table->items); ?></p>
+        <?php if (!empty($table->items)): ?>
+            <p><strong>Sample item data:</strong></p>
+            <pre><?php print_r($table->items[0]); ?></pre>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal for viewing submission details -->
