@@ -322,7 +322,7 @@ function register_lead_submission_post_type() {
     register_post_type('lead_submission', $args);
 }
 
-add_action('init', 'register_lead_submission_post_type');
+// add_action('init', 'register_lead_submission_post_type');
 
 /**
  * Add custom columns to Lead Submissions list
@@ -342,7 +342,7 @@ function lead_submission_columns($columns) {
     return $columns;
 }
 
-add_filter('manage_lead_submission_posts_columns', 'lead_submission_columns');
+// add_filter('manage_lead_submission_posts_columns', 'lead_submission_columns');
 
 /**
  * Populate custom columns
@@ -377,7 +377,7 @@ function lead_submission_column_content($column, $post_id) {
     }
 }
 
-add_action('manage_lead_submission_posts_custom_column', 'lead_submission_column_content', 10, 2);
+// add_action('manage_lead_submission_posts_custom_column', 'lead_submission_column_content', 10, 2);
 
 /**
  * Contact Form Functionality
