@@ -34,6 +34,28 @@ function child_enqueue_scripts() {
             true
         );
     }
+
+    // Enqueue Contact Form CSS and JS
+    if (is_page_template('page-contact-us.php')) {
+        wp_enqueue_style(
+            'contact-form-styles',
+            get_stylesheet_directory_uri() . '/contact-form-styles.css',
+            array(),
+            CHILD_THEME_SS_ENTERPRISES_B2B_VERSION
+        );
+
+        wp_enqueue_script(
+            'contact-form-js',
+            get_stylesheet_directory_uri() . '/contact-form.js',
+            array('jquery'),
+            CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
+            true
+        );
+
+        wp_localize_script('contact-form-js', 'contactFormData', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+        ));
+    }
 }
 
 add_action('wp_enqueue_scripts', 'child_enqueue_scripts');
@@ -376,7 +398,9 @@ function handle_contact_form_submit() {
     // Sanitize form data
     $first_name = isset($_POST['firstName']) ? sanitize_text_field($_POST['firstName']) : '';
     $last_name = isset($_POST['lastName']) ? sanitize_text_field($_POST['lastName']) : '';
+    $country_code = isset($_POST['countryCode']) ? sanitize_text_field($_POST['countryCode']) : '';
     $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+    $full_phone = $country_code . ' ' . $phone;
     $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
     $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
 
@@ -402,7 +426,7 @@ function handle_contact_form_submit() {
     $email_body = "You have received a new contact form submission:\n\n";
     $email_body .= "Name: " . $first_name . " " . $last_name . "\n";
     $email_body .= "Email: " . $email . "\n";
-    $email_body .= "Phone: " . $phone . "\n\n";
+    $email_body .= "Phone: " . $full_phone . "\n\n";
     $email_body .= "Message:\n" . $message . "\n\n";
     $email_body .= "This message was sent from the contact form on " . $site_name . " (" . get_site_url() . ")";
 
