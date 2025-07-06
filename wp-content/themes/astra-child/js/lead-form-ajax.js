@@ -95,6 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('action', 'lead_form_submit');
             formData.append('nonce', leadFormData.nonce);
 
+            console.log('Submitting form with data:', Object.fromEntries(formData.entries()));
+
             // Send AJAX request
             fetch(leadFormData.ajaxurl, {
                 method: 'POST',

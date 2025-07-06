@@ -44,6 +44,7 @@ get_header(); ?>
 
                             <form id="lead-generation-form" class="lead-form" method="post">
                                 <div id="form-response-container"></div>
+                                <input type="hidden" name="lead_form_nonce" value="<?php echo esc_attr(wp_create_nonce('lead_form_nonce')); ?>" />
 
                                 <!-- Personal Information Section -->
                                 <div class="form-section">
@@ -52,7 +53,7 @@ get_header(); ?>
                                     <div class="form-row">
                                         <div class="form-group half-width">
                                             <label for="lead_first_name">First Name *</label>
-                                            <input type="text" id="lead_first_name" name="lead_first_name" required>
+                                            <input type="text" id="lead_first_name" name="lead_first_name" >
                                         </div>
                                         <div class="form-group half-width">
                                             <label for="lead_last_name">Last Name *</label>
