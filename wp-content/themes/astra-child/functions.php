@@ -780,6 +780,9 @@ function create_form_submissions_tables() {
 }
 add_action('after_switch_theme', 'create_form_submissions_tables');
 
+// Run table creation on init to ensure tables exist
+add_action('init', 'create_form_submissions_tables');
+
 /**
  * Register admin pages for form submissions
  */
@@ -902,3 +905,51 @@ function get_lead_submission_details() {
     wp_send_json_success($submission);
 }
 add_action('wp_ajax_get_lead_submission_details', 'get_lead_submission_details');
+
+/**
+ * Add a sample lead entry for testing (will run once)
+ */
+function add_sample_lead_entry() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'lead_forms';
+
+    // Check if we already have entries
+    $count = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
+
+    // Only add a sample if the table is empty
+    if ($count == 0) {
+        $sample_data = array(
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'phone' => '+1 (555) 123-4567',
+            'job_title' => 'Marketing Manager',
+            'department' => 'Marketing',
+            'company' => 'Example Corp',
+            'website' => 'https://example.com',
+            'industry' => 'Technology',
+            'company_size' => '50-100',
+            'city' => 'New York',
+            'state' => 'NY',
+            'country' => 'United States',
+            'postal_code' => '10001',
+            'latitude' => '40.7128',
+            'longitude' => '-74.0060',
+            'timezone' => 'America/New_York',
+            'subject' => 'Product Inquiry',
+            'message' => 'I am interested in learning more about your services. Please contact me at your earliest convenience.',
+            'interest' => 'Software_Services',
+            'budget' => '$5000_$10000',
+            'timeline' => '1_3_months',
+            'how_heard' => 'Google_Search',
+            'marketing_consent' => 1,
+            'ip_address' => '127.0.0.1',
+            'location_source' => 'manual',
+            'user_agent' => 'Sample Lead Entry',
+            'created_at' => current_time('mysql')
+        );
+
+        $wpdb->insert($table_name, $sample_data);
+    }
+}
+add_action('init', 'add_sample_lead_entry');
