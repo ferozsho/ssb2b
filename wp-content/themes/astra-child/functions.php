@@ -43,6 +43,11 @@ add_action('wp_enqueue_scripts', 'child_enqueue_scripts');
 add_action( 'wp_enqueue_scripts', 'child_enqueue_styles', 15 );
 
 /**
+ * Include Geolocation Helper
+ */
+require_once get_stylesheet_directory() . '/includes/geolocation.php';
+
+/**
  * Lead Generation Form Handler
  */
 function handle_lead_generation_form() {
@@ -60,14 +65,34 @@ function handle_lead_generation_form() {
         $last_name = sanitize_text_field($_POST['lead_last_name']);
         $email = sanitize_email($_POST['lead_email']);
         $phone = sanitize_text_field($_POST['lead_phone']);
+        $job_title = sanitize_text_field($_POST['lead_job_title']);
+        $department = sanitize_text_field($_POST['lead_department']);
         $company = sanitize_text_field($_POST['lead_company']);
+        $website = esc_url_raw($_POST['lead_website']);
+        $industry = sanitize_text_field($_POST['lead_industry']);
+        $company_size = sanitize_text_field($_POST['lead_company_size']);
         $subject = sanitize_text_field($_POST['lead_subject']);
         $message = sanitize_textarea_field($_POST['lead_message']);
         $interest = sanitize_text_field($_POST['lead_interest']);
+        $budget = sanitize_text_field($_POST['lead_budget']);
+        $timeline = sanitize_text_field($_POST['lead_timeline']);
+        $how_heard = sanitize_text_field($_POST['lead_how_heard']);
         $consent = isset($_POST['lead_consent']) ? 1 : 0;
+        $marketing_consent = isset($_POST['lead_marketing_consent']) ? 1 : 0;
+        
+        // Location data
+        $city = sanitize_text_field($_POST['lead_city']);
+        $state = sanitize_text_field($_POST['lead_state']);
+        $country = sanitize_text_field($_POST['lead_country']);
+        $postal_code = sanitize_text_field($_POST['lead_postal_code']);
+        $latitude = sanitize_text_field($_POST['lead_latitude']);
+        $longitude = sanitize_text_field($_POST['lead_longitude']);
+        $timezone = sanitize_text_field($_POST['lead_timezone']);
+        $ip_address = sanitize_text_field($_POST['lead_ip_address']);
+        $location_source = sanitize_text_field($_POST['lead_location_source']);
         
         // Basic validation
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($subject) || empty($message) || !$consent) {
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($company) || empty($subject) || empty($message) || !$consent) {
             wp_redirect(add_query_arg('lead_form_error', '1', get_permalink()));
             exit;
         }
@@ -85,15 +110,45 @@ function handle_lead_generation_form() {
         $email_subject = '[' . $site_name . '] New Lead: ' . $subject;
         
         $email_body = "New lead submission from " . $site_name . "\n\n";
+        $email_body .= "=== PERSONAL INFORMATION ===\n";
         $email_body .= "Name: " . $first_name . " " . $last_name . "\n";
         $email_body .= "Email: " . $email . "\n";
         $email_body .= "Phone: " . $phone . "\n";
+        $email_body .= "Job Title: " . $job_title . "\n";
+        $email_body .= "Department: " . $department . "\n\n";
+        
+        $email_body .= "=== COMPANY INFORMATION ===\n";
         $email_body .= "Company: " . $company . "\n";
+        $email_body .= "Website: " . $website . "\n";
+        $email_body .= "Industry: " . $industry . "\n";
+        $email_body .= "Company Size: " . $company_size . "\n\n";
+        
+        $email_body .= "=== LOCATION INFORMATION ===\n";
+        $email_body .= "City: " . $city . "\n";
+        $email_body .= "State/Region: " . $state . "\n";
+        $email_body .= "Country: " . $country . "\n";
+        $email_body .= "ZIP/Postal Code: " . $postal_code . "\n";
+        $email_body .= "Location Source: " . $location_source . "\n\n";
+        
+        $email_body .= "=== INQUIRY DETAILS ===\n";
         $email_body .= "Subject: " . $subject . "\n";
-        $email_body .= "Area of Interest: " . $interest . "\n\n";
-        $email_body .= "Message:\n" . $message . "\n\n";
+        $email_body .= "Area of Interest: " . $interest . "\n";
+        $email_body .= "Budget Range: " . $budget . "\n";
+        $email_body .= "Timeline: " . $timeline . "\n";
+        $email_body .= "How they heard about us: " . $how_heard . "\n";
+        $email_body .= "Marketing consent: " . ($marketing_consent ? 'Yes' : 'No') . "\n\n";
+        
+        $email_body .= "MESSAGE:\n" . $message . "\n\n";
+        
+        $email_body .= "=== TECHNICAL DETAILS ===\n";
         $email_body .= "Submitted on: " . date('Y-m-d H:i:s') . "\n";
-        $email_body .= "IP Address: " . $_SERVER['REMOTE_ADDR'] . "\n";
+        $email_body .= "IP Address: " . $ip_address . "\n";
+        if ($latitude && $longitude) {
+            $email_body .= "Coordinates: " . $latitude . ", " . $longitude . "\n";
+        }
+        if ($timezone) {
+            $email_body .= "Timezone: " . $timezone . "\n";
+        }
         
         // Email headers
         $headers = array();
@@ -107,10 +162,12 @@ function handle_lead_generation_form() {
         // Send auto-reply to customer
         $auto_reply_subject = 'Thank you for contacting ' . $site_name;
         $auto_reply_body = "Dear " . $first_name . ",\n\n";
-        $auto_reply_body .= "Thank you for contacting us. We have received your message and will get back to you as soon as possible.\n\n";
-        $auto_reply_body .= "Your message details:\n";
+        $auto_reply_body .= "Thank you for contacting us. We have received your inquiry and will get back to you as soon as possible.\n\n";
+        $auto_reply_body .= "Your inquiry details:\n";
+        $auto_reply_body .= "Company: " . $company . "\n";
         $auto_reply_body .= "Subject: " . $subject . "\n";
         $auto_reply_body .= "Message: " . $message . "\n\n";
+        $auto_reply_body .= "We appreciate your interest and will respond within 24 hours during business days.\n\n";
         $auto_reply_body .= "Best regards,\n";
         $auto_reply_body .= $site_name . " Team\n";
         
@@ -126,17 +183,34 @@ function handle_lead_generation_form() {
             'last_name' => $last_name,
             'email' => $email,
             'phone' => $phone,
+            'job_title' => $job_title,
+            'department' => $department,
             'company' => $company,
+            'website' => $website,
+            'industry' => $industry,
+            'company_size' => $company_size,
+            'city' => $city,
+            'state' => $state,
+            'country' => $country,
+            'postal_code' => $postal_code,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'timezone' => $timezone,
             'subject' => $subject,
             'message' => $message,
             'interest' => $interest,
+            'budget' => $budget,
+            'timeline' => $timeline,
+            'how_heard' => $how_heard,
+            'marketing_consent' => $marketing_consent,
             'submission_date' => current_time('mysql'),
-            'ip_address' => $_SERVER['REMOTE_ADDR']
+            'ip_address' => $ip_address,
+            'location_source' => $location_source
         );
         
         // Save to custom table or post meta (for now, we'll save as custom post type)
         $lead_post = array(
-            'post_title' => 'Lead: ' . $first_name . ' ' . $last_name,
+            'post_title' => 'Lead: ' . $first_name . ' ' . $last_name . ' (' . $company . ')',
             'post_content' => $message,
             'post_status' => 'private',
             'post_type' => 'lead_submission',
@@ -200,11 +274,13 @@ add_action('init', 'register_lead_submission_post_type');
 function lead_submission_columns($columns) {
     $columns = array(
         'cb' => $columns['cb'],
-        'title' => 'Name',
+        'title' => 'Name & Company',
         'email' => 'Email',
         'phone' => 'Phone',
-        'company' => 'Company',
+        'location' => 'Location',
         'subject' => 'Subject',
+        'interest' => 'Interest',
+        'budget' => 'Budget',
         'date' => 'Date'
     );
     return $columns;
@@ -221,13 +297,26 @@ function lead_submission_column_content($column, $post_id) {
             echo get_post_meta($post_id, 'email', true);
             break;
         case 'phone':
-            echo get_post_meta($post_id, 'phone', true);
+            $phone = get_post_meta($post_id, 'phone', true);
+            echo $phone ? $phone : '—';
             break;
-        case 'company':
-            echo get_post_meta($post_id, 'company', true);
+        case 'location':
+            $city = get_post_meta($post_id, 'city', true);
+            $state = get_post_meta($post_id, 'state', true);
+            $country = get_post_meta($post_id, 'country', true);
+            $location_parts = array_filter([$city, $state, $country]);
+            echo !empty($location_parts) ? implode(', ', $location_parts) : '—';
             break;
         case 'subject':
             echo get_post_meta($post_id, 'subject', true);
+            break;
+        case 'interest':
+            $interest = get_post_meta($post_id, 'interest', true);
+            echo $interest ? ucwords(str_replace('_', ' ', $interest)) : '—';
+            break;
+        case 'budget':
+            $budget = get_post_meta($post_id, 'budget', true);
+            echo $budget ? ucwords(str_replace('_', ' ', $budget)) : '—';
             break;
     }
 }
