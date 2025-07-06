@@ -346,3 +346,100 @@ function lead_submission_column_content($column, $post_id) {
 }
 
 add_action('manage_lead_submission_posts_custom_column', 'lead_submission_column_content', 10, 2);
+
+/**
+ * Contact Form Functionality
+ */
+function enqueue_contact_form_assets() {
+    if (is_page_template('page-contact-us.php')) {
+        wp_enqueue_style('contact-form-css', get_stylesheet_directory_uri() . '/contact-form.css', array(), CHILD_THEME_SS_ENTERPRISES_B2B_VERSION);
+
+        wp_enqueue_script('contact-form-js', get_stylesheet_directory_uri() . '/contact-form.js', array('jquery'), CHILD_THEME_SS_ENTERPRISES_B2B_VERSION, true);
+
+        wp_localize_script('contact-form-js', 'contactFormData', array(
+            'ajaxurl' => admin_url('admin-ajax.php')
+        ));
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_contact_form_assets');
+
+/**
+ * Contact Form AJAX Handler
+ */
+function handle_contact_form_submit() {
+    // Check nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'contact_form_submit')) {
+        wp_send_json_error(array('message' => 'Security verification failed'));
+        die();
+    }
+
+    // Sanitize form data
+    $first_name = isset($_POST['firstName']) ? sanitize_text_field($_POST['firstName']) : '';
+    $last_name = isset($_POST['lastName']) ? sanitize_text_field($_POST['lastName']) : '';
+    $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
+
+    // Validate required fields
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($message)) {
+        wp_send_json_error(array('message' => 'Please fill all required fields'));
+        die();
+    }
+
+    // Validate email
+    if (!is_email($email)) {
+        wp_send_json_error(array('message' => 'Please enter a valid email address'));
+        die();
+    }
+
+    // Get admin email
+    $admin_email = get_option('admin_email');
+    $site_name = get_bloginfo('name');
+
+    // Prepare email content
+    $subject = sprintf('[%s] New Contact Form Submission from %s %s', $site_name, $first_name, $last_name);
+
+    $email_body = "You have received a new contact form submission:\n\n";
+    $email_body .= "Name: " . $first_name . " " . $last_name . "\n";
+    $email_body .= "Email: " . $email . "\n";
+    $email_body .= "Phone: " . $phone . "\n\n";
+    $email_body .= "Message:\n" . $message . "\n\n";
+    $email_body .= "This message was sent from the contact form on " . $site_name . " (" . get_site_url() . ")";
+
+    // Email headers
+    $headers = array();
+    $headers[] = 'From: ' . $first_name . ' ' . $last_name . ' <' . $email . '>';
+    $headers[] = 'Reply-To: ' . $first_name . ' ' . $last_name . ' <' . $email . '>';
+    $headers[] = 'Content-Type: text/plain; charset=UTF-8';
+
+    // Send email (WP Mail SMTP plugin will handle the actual sending)
+    $sent = wp_mail($admin_email, $subject, $email_body, $headers);
+
+    // Send auto-reply to customer
+    $auto_reply_subject = 'Thank you for contacting ' . $site_name;
+    $auto_reply_body = "Dear " . $first_name . ",\n\n";
+    $auto_reply_body .= "Thank you for contacting us. We have received your message and will get back to you shortly.\n\n";
+    $auto_reply_body .= "Here's a copy of your message:\n";
+    $auto_reply_body .= "------------------------------\n";
+    $auto_reply_body .= $message . "\n";
+    $auto_reply_body .= "------------------------------\n\n";
+    $auto_reply_body .= "We appreciate your interest and will respond as soon as possible.\n\n";
+    $auto_reply_body .= "Best regards,\n";
+    $auto_reply_body .= $site_name . " Team";
+
+    $auto_reply_headers = array();
+    $auto_reply_headers[] = 'From: ' . $site_name . ' <' . $admin_email . '>';
+    $auto_reply_headers[] = 'Content-Type: text/plain; charset=UTF-8';
+
+    wp_mail($email, $auto_reply_subject, $auto_reply_body, $auto_reply_headers);
+
+    if ($sent) {
+        wp_send_json_success(array('message' => 'Your message has been sent successfully!'));
+    } else {
+        wp_send_json_error(array('message' => 'There was an error sending your message. Please try again.'));
+    }
+
+    die();
+}
+add_action('wp_ajax_contact_form_submit', 'handle_contact_form_submit');
+add_action('wp_ajax_nopriv_contact_form_submit', 'handle_contact_form_submit');

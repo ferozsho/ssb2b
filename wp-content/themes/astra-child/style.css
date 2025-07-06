@@ -92,7 +92,7 @@ Template: astra
 .lead-form textarea,
 .lead-form select {
     width: 100%;
-    padding: 12px 15px;
+    /*   */
     border: 2px solid #e1e1e1;
     border-radius: 6px;
     font-size: 16px;
@@ -202,30 +202,30 @@ Template: astra
         margin: 20px 15px;
         padding: 20px;
     }
-    
+
     .lead-form {
         padding: 25px;
     }
-    
+
     .form-section {
         margin-bottom: 30px;
         padding-bottom: 20px;
     }
-    
+
     .form-section-title {
         font-size: 18px;
     }
-    
+
     .lead-form .form-row {
         flex-direction: column;
         gap: 0;
     }
-    
+
     .lead-form .form-group.half-width {
         flex: 1;
         margin-bottom: 20px;
     }
-    
+
     .lead-form-submit {
         width: 100%;
         max-width: none;
@@ -238,24 +238,24 @@ Template: astra
         margin: 15px 10px;
         padding: 15px;
     }
-    
+
     .lead-form {
         padding: 20px;
     }
-    
+
     .form-section-title {
         font-size: 16px;
     }
-    
+
     .form-section-note {
         font-size: 13px;
         padding: 8px 12px;
     }
-    
+
     .lead-form .form-group {
         min-width: auto;
     }
-    
+
     .lead-form input[type="text"],
     .lead-form input[type="email"],
     .lead-form input[type="tel"],
