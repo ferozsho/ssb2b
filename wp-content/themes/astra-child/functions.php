@@ -124,8 +124,6 @@ function handle_lead_generation_form() {
         $last_name = sanitize_text_field($_POST['lead_last_name']);
         $email = sanitize_email($_POST['lead_email']);
         $phone = sanitize_text_field($_POST['lead_phone']);
-        $consent = isset($_POST['lead_consent']) ? 1 : 0;
-        $marketing_consent = isset($_POST['lead_marketing_consent']) ? 1 : 0;
 
         // Location data
         $city = sanitize_text_field($_POST['lead_city']);
@@ -215,7 +213,6 @@ function handle_lead_generation_form() {
             'latitude' => $latitude,
             'longitude' => $longitude,
             'timezone' => $timezone,
-            'marketing_consent' => $marketing_consent,
             'ip_address' => $ip_address,
             'location_source' => $location_source,
             'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
@@ -290,9 +287,6 @@ function lead_submission_columns($columns) {
         'email' => 'Email',
         'phone' => 'Phone',
         'location' => 'Location',
-        'subject' => 'Subject',
-        'interest' => 'Interest',
-        'budget' => 'Budget',
         'date' => 'Date'
     );
     return $columns;
@@ -318,17 +312,6 @@ function lead_submission_column_content($column, $post_id) {
             $country = get_post_meta($post_id, 'country', true);
             $location_parts = array_filter([$city, $state, $country]);
             echo !empty($location_parts) ? implode(', ', $location_parts) : '—';
-            break;
-        case 'subject':
-            echo get_post_meta($post_id, 'subject', true);
-            break;
-        case 'interest':
-            $interest = get_post_meta($post_id, 'interest', true);
-            echo $interest ? ucwords(str_replace('_', ' ', $interest)) : '—';
-            break;
-        case 'budget':
-            $budget = get_post_meta($post_id, 'budget', true);
-            echo $budget ? ucwords(str_replace('_', ' ', $budget)) : '—';
             break;
     }
 }
@@ -500,8 +483,6 @@ function handle_lead_form_ajax_submit() {
     $last_name = isset($_POST['lead_last_name']) ? sanitize_text_field($_POST['lead_last_name']) : '';
     $email = isset($_POST['lead_email']) ? sanitize_email($_POST['lead_email']) : '';
     $phone = isset($_POST['lead_phone']) ? sanitize_text_field($_POST['lead_phone']) : '';
-    $consent = isset($_POST['lead_consent']) ? 1 : 0;
-    $marketing_consent = isset($_POST['lead_marketing_consent']) ? 1 : 0;
 
     // Location data
     $city = isset($_POST['lead_city']) ? sanitize_text_field($_POST['lead_city']) : '';
@@ -591,7 +572,6 @@ function handle_lead_form_ajax_submit() {
         'latitude' => $latitude,
         'longitude' => $longitude,
         'timezone' => $timezone,
-        'marketing_consent' => $marketing_consent,
         'ip_address' => $ip_address,
         'location_source' => $location_source,
         'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
@@ -664,7 +644,6 @@ function create_form_submissions_tables() {
         latitude varchar(50) NOT NULL,
         longitude varchar(50) NOT NULL,
         timezone varchar(100) NOT NULL,
-        marketing_consent tinyint(1) NOT NULL DEFAULT 0,
         ip_address varchar(100) NOT NULL,
         location_source varchar(50) NOT NULL,
         user_agent text NOT NULL,
@@ -804,44 +783,3 @@ function get_lead_submission_details() {
 }
 add_action('wp_ajax_get_lead_submission_details', 'get_lead_submission_details');
 
-/**
- * Add a sample lead entry for testing (will run once)
- */
-// function add_sample_lead_entry() {
-//     global $wpdb;
-//     $table_name = $wpdb->prefix . 'lead_forms';
-
-//     // Check if we already have entries
-//     $count = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
-
-//     // Only add a sample if the table is empty
-//     if ($count == 0) {
-//         $sample_data = array(
-//             'first_name' => 'John',
-//             'last_name' => 'Doe',
-//             'email' => 'john.doe@example.com',
-//             'phone' => '+1 (555) 123-4567',
-//             'city' => 'New York',
-//             'state' => 'NY',
-//             'country' => 'United States',
-//             'postal_code' => '10001',
-//             'latitude' => '40.7128',
-//             'longitude' => '-74.0060',
-//             'timezone' => 'America/New_York',
-//             'subject' => 'Product Inquiry',
-//             'message' => 'I am interested in learning more about your services. Please contact me at your earliest convenience.',
-//             'interest' => 'Software_Services',
-//             'budget' => '$5000_$10000',
-//             'timeline' => '1_3_months',
-//             'how_heard' => 'Google_Search',
-//             'marketing_consent' => 1,
-//             'ip_address' => '127.0.0.1',
-//             'location_source' => 'manual',
-//             'user_agent' => 'Sample Lead Entry',
-//             'created_at' => current_time('mysql')
-//         );
-
-//         $wpdb->insert($table_name, $sample_data);
-//     }
-// }
-// add_action('init', 'add_sample_lead_entry');
