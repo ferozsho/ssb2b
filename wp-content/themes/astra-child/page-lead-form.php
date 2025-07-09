@@ -8,7 +8,22 @@
  * @since 1.0.0
  */
 
-get_header(); ?>
+if (!is_front_page()) {
+    get_header();
+} else {
+    echo '<style>
+        .ast-container #primary #main .lead-form-container {
+            max-width: 100%;
+        }
+        .services-form {
+            background-color: #ECEFF1;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+        }
+    </style>';
+}
+
+?>
 
 <div class="ast-container">
     <div id="primary" class="content-area">
@@ -291,4 +306,6 @@ get_header(); ?>
     </div><!-- #primary -->
 </div><!-- .ast-container -->
 
-<?php get_footer(); ?>
+<?php if (!is_front_page()) {
+    get_footer();
+} ?>
