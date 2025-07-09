@@ -142,3 +142,9 @@
         width: 100%;
     }
 }
+
+@media (max-width: 480px) {
+    .lead-form input[type="text"], .lead-form input[type="email"], .lead-form input[type="tel"], .lead-form input[type="url"], .lead-form textarea, .lead-form select {
+        padding: 6px 10px;
+    }
+}

@@ -22,6 +22,14 @@ if (!is_front_page()) {
             width: 100vw;
             margin-left: calc(-50vw + 50%);
         }
+        .services-form .services-container {
+            padding: 0px;
+        }
+        @media (max-width: 480px) {
+            .lead-form input[type="text"], .lead-form input[type="email"], .lead-form input[type="tel"], .lead-form input[type="url"], .lead-form textarea, .lead-form select {
+                padding: 6px 10px;
+            }
+        }
     </style>';
 }
 
