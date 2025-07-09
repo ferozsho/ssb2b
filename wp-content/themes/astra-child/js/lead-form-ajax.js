@@ -47,18 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showFieldError(emailField, 'Please enter a valid email address.');
             }
 
-            // Validate website URL if provided
-            const websiteField = leadForm.querySelector('#lead_website');
-            if (websiteField && websiteField.value) {
-                const urlRegex = /^https?:\/\/.+/;
-                if (!urlRegex.test(websiteField.value)) {
-                    hasErrors = true;
-                    websiteField.style.borderColor = '#e74c3c';
-                    websiteField.classList.add('error');
-                    showFieldError(websiteField, 'Please enter a valid URL starting with http:// or https://');
-                }
-            }
-
             // Check consent checkbox
             const consentField = leadForm.querySelector('#lead_consent');
             if (consentField && !consentField.checked) {
@@ -220,49 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Website URL validation
-        const websiteField = leadForm.querySelector('#lead_website');
-        if (websiteField) {
-            websiteField.addEventListener('blur', function() {
-                if (this.value) {
-                    if (!this.value.startsWith('http://') && !this.value.startsWith('https://')) {
-                        this.value = 'https://' + this.value;
-                    }
-
-                    const urlRegex = /^https?:\/\/.+\..+/;
-                    if (!urlRegex.test(this.value)) {
-                        this.style.borderColor = '#e74c3c';
-                        this.classList.add('error');
-                        this.classList.remove('valid');
-                        showFieldError(this, 'Please enter a valid website URL.');
-                    } else {
-                        this.style.borderColor = '#2ecc71';
-                        this.classList.remove('error');
-                        this.classList.add('valid');
-                        hideFieldError(this);
-                    }
-                } else {
-                    this.style.borderColor = '#e1e1e1';
-                    this.classList.remove('error');
-                    this.classList.remove('valid');
-                    hideFieldError(this);
-                }
-            });
-
-            // Also check on input if it was previously marked as error
-            websiteField.addEventListener('input', function() {
-                if (this.classList.contains('error') && this.value) {
-                    const urlRegex = /^https?:\/\/.+\..+/;
-                    if (urlRegex.test(this.value)) {
-                        this.style.borderColor = '#2ecc71';
-                        this.classList.remove('error');
-                        this.classList.add('valid');
-                        hideFieldError(this);
-                    }
-                }
-            });
-        }
-
         // Phone number formatting (basic)
         const phoneField = leadForm.querySelector('#lead_phone');
         if (phoneField) {
@@ -377,33 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.parentElement.classList.remove('focused');
             });
         });
-
-        // Company size and industry dependent fields
-        const companySizeField = leadForm.querySelector('#lead_company_size');
-        const budgetField = leadForm.querySelector('#lead_budget');
-
-        if (companySizeField && budgetField) {
-            companySizeField.addEventListener('change', function() {
-                // Suggest budget ranges based on company size
-                if (this.value === '1-10') {
-                    showFieldHint(budgetField, 'Small companies typically have budgets under $25k');
-                } else if (this.value === '1000+') {
-                    showFieldHint(budgetField, 'Enterprise companies often have larger budgets ($100k+)');
-                }
-            });
-        }
-
-        // Timeline and interest correlation
-        const interestField = leadForm.querySelector('#lead_interest');
-        const timelineField = leadForm.querySelector('#lead_timeline');
-
-        if (interestField && timelineField) {
-            interestField.addEventListener('change', function() {
-                if (this.value === 'demo' || this.value === 'pricing') {
-                    showFieldHint(timelineField, 'Demo and pricing inquiries are often short-term');
-                }
-            });
-        }
     }
 
     // Helper functions
@@ -457,29 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (existingError) {
             existingError.remove();
         }
-    }
-
-    function showFieldHint(field, message) {
-        // Remove existing hint
-        const existingHint = field.parentNode.querySelector('.field-hint');
-        if (existingHint) {
-            existingHint.remove();
-        }
-
-        const hintDiv = document.createElement('div');
-        hintDiv.className = 'field-hint';
-        hintDiv.textContent = message;
-        hintDiv.style.cssText = 'color: #3498db; font-size: 12px; margin-top: 5px; font-style: italic;';
-        field.parentNode.appendChild(hintDiv);
-
-        // Auto-hide after 5 seconds
-        setTimeout(function() {
-            hintDiv.style.transition = 'opacity 0.3s ease';
-            hintDiv.style.opacity = '0';
-            setTimeout(function() {
-                hintDiv.remove();
-            }, 300);
-        }, 5000);
     }
 
     // Field validation helper function

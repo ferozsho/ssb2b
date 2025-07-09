@@ -15,7 +15,7 @@ get_header();
             <div class="contact-container">
                 <div class="map-column">
                     <div class="google-map">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.291060361037!2d78.4350577751797!3d17.44121508290379!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb90cadd3753a5%3A0x7a6aef63e7e143c6!2sMedvarsity%20Technologies%20Private%20Limited!5e0!3m2!1sen!2sin!4v1719619280901!5m2!1sen!2sin" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1903.1811399436185!2d78.47362759362696!3d17.442366052354974!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb91ba998bc11f%3A0x2e2afaf276de5186!2sSS%20Enterprises-%20Tata%20Tele%20Partner!5e0!3m2!1sen!2sin!4v1752081385855!5m2!1sen!2sin" width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
 
@@ -182,7 +182,7 @@ get_header();
                 <div class="contact-info">
                     <div class="info-box">
                         <h3>Head Office</h3>
-                        <p>Road No. 12, NBT Colony, Banjara Hills, Hyderabad, Telangana 500034.</p>
+                        <p>Plot No B-87, 2nd Floor, Lane Number 3, Indian Airlines Colony, Patigadda, Begumpet, Hyderabad, Telangana 500016.</p>
                     </div>
 
                     <div class="info-box">

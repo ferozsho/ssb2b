@@ -22,7 +22,7 @@ get_header(); ?>
                             <em>Best connection at work is like the main fuel for smooth operations in a company</em>.
                         </p>
                         <div class="hero-buttons">
-                            <a href="<?php echo get_permalink(get_page_by_path('lead')); ?>" class="btn btn-primary">Connect with Us!</a>
+                            <a href="<?php echo get_permalink(get_page_by_path('contact-us')); ?>" class="btn btn-primary">Connect with Us!</a>
                         </div>
                     </div>
                     <div class="hero-image">
@@ -90,14 +90,6 @@ get_header(); ?>
                         </div>
                         <h3 class="feature-title">Professional</h3>
                         <p class="feature-description">Our team maintains the highest standards of professionalism in every interaction and deliverable.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/images/support.svg" alt="Support" />
-                        </div>
-                        <h3 class="feature-title">Support</h3>
-                        <p class="feature-description">Comprehensive support throughout your journey, from initial consultation to ongoing maintenance.</p>
                     </div>
                 </div>
             </div>
