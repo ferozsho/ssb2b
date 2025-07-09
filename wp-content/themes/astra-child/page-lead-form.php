@@ -14,6 +14,8 @@ if (!is_front_page()) {
     echo '<style>
         .ast-container #primary #main .lead-form-container {
             max-width: 100%;
+            background: #ffffff;
+            margin: 40px 0;
         }
         .services-form {
             background-color: #ECEFF1;
