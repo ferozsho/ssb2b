@@ -33,9 +33,6 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
             'full_name' => 'Name',
             'email' => 'Email',
             'phone' => 'Phone',
-            'company' => 'Company',
-            'subject' => 'Subject',
-            'interest' => 'Interest',
             'location' => 'Location',
             'created_at' => 'Date'
         );
@@ -47,9 +44,7 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
         $sortable_columns = array(
             'full_name' => array('last_name', true),
             'email' => array('email', false),
-            'company' => array('company', false),
             'created_at' => array('created_at', true),
-            'interest' => array('interest', false),
             'location' => array('country', false)
         );
 
@@ -60,16 +55,6 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
         switch ($column_name) {
             case 'email':
                 return '<a href="mailto:' . esc_attr($item[$column_name]) . '">' . esc_html($item[$column_name]) . '</a>';
-            case 'company':
-                $company = esc_html($item[$column_name]);
-                if (!empty($item['website'])) {
-                    return '<a href="' . esc_url($item['website']) . '" target="_blank">' . $company . '</a>';
-                }
-                return $company;
-            case 'subject':
-                return wp_trim_words(esc_html($item[$column_name]), 8, '...');
-            case 'interest':
-                return ucwords(str_replace('_', ' ', esc_html($item[$column_name])));
             case 'created_at':
                 $date_format = get_option('date_format');
                 $time_format = get_option('time_format');
@@ -139,8 +124,7 @@ class Lead_Form_Submissions_List_Table extends WP_List_Table {
 
         if (!empty($search)) {
             $where = $wpdb->prepare(
-                " WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR company LIKE %s OR subject LIKE %s OR message LIKE %s OR city LIKE %s OR state LIKE %s OR country LIKE %s",
-                '%' . $wpdb->esc_like($search) . '%',
+                " WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR OR subject LIKE %s OR message LIKE %s OR city LIKE %s OR state LIKE %s OR country LIKE %s",
                 '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%',
                 '%' . $wpdb->esc_like($search) . '%',
@@ -361,16 +345,6 @@ table.wp-list-table {
                     <p><strong>Name:</strong> <span id="modal-name"></span></p>
                     <p><strong>Email:</strong> <span id="modal-email"></span></p>
                     <p><strong>Phone:</strong> <span id="modal-phone"></span></p>
-                    <p><strong>Job Title:</strong> <span id="modal-job-title"></span></p>
-                    <p><strong>Department:</strong> <span id="modal-department"></span></p>
-                </div>
-
-                <h3>Company Information</h3>
-                <div class="detail-section company-details">
-                    <p><strong>Company:</strong> <span id="modal-company"></span></p>
-                    <p><strong>Website:</strong> <span id="modal-website"></span></p>
-                    <p><strong>Industry:</strong> <span id="modal-industry"></span></p>
-                    <p><strong>Company Size:</strong> <span id="modal-company-size"></span></p>
                 </div>
 
                 <h3>Location Information</h3>
@@ -383,16 +357,6 @@ table.wp-list-table {
                     <p><strong>Timezone:</strong> <span id="modal-timezone"></span></p>
                     <p><strong>IP Address:</strong> <span id="modal-ip"></span></p>
                     <p><strong>Location Source:</strong> <span id="modal-location-source"></span></p>
-                </div>
-
-                <h3>Inquiry Details</h3>
-                <div class="detail-section inquiry-details">
-                    <p><strong>Subject:</strong> <span id="modal-subject"></span></p>
-                    <p><strong>Area of Interest:</strong> <span id="modal-interest"></span></p>
-                    <p><strong>Budget Range:</strong> <span id="modal-budget"></span></p>
-                    <p><strong>Timeline:</strong> <span id="modal-timeline"></span></p>
-                    <p><strong>How Heard About Us:</strong> <span id="modal-how-heard"></span></p>
-                    <p><strong>Marketing Consent:</strong> <span id="modal-marketing-consent"></span></p>
                 </div>
 
                 <h3>Message</h3>
@@ -434,13 +398,6 @@ jQuery(document).ready(function($) {
                     $('#modal-name').text(data.first_name + ' ' + data.last_name);
                     $('#modal-email').text(data.email);
                     $('#modal-phone').text(data.phone || 'Not provided');
-                    $('#modal-job-title').text(data.job_title || 'Not provided');
-                    $('#modal-department').text(data.department ? formatField(data.department) : 'Not provided');
-
-                    $('#modal-company').text(data.company || 'Not provided');
-                    $('#modal-website').html(data.website ? '<a href="' + data.website + '" target="_blank">' + data.website + '</a>' : 'Not provided');
-                    $('#modal-industry').text(data.industry ? formatField(data.industry) : 'Not provided');
-                    $('#modal-company-size').text(data.company_size || 'Not provided');
 
                     $('#modal-city').text(data.city || 'Not available');
                     $('#modal-state').text(data.state || 'Not available');
@@ -450,13 +407,6 @@ jQuery(document).ready(function($) {
                     $('#modal-timezone').text(data.timezone || 'Not available');
                     $('#modal-ip').text(data.ip_address || 'Not available');
                     $('#modal-location-source').text(data.location_source || 'Not available');
-
-                    $('#modal-subject').text(data.subject || 'Not provided');
-                    $('#modal-interest').text(data.interest ? formatField(data.interest) : 'Not provided');
-                    $('#modal-budget').text(data.budget ? formatField(data.budget) : 'Not provided');
-                    $('#modal-timeline').text(data.timeline ? formatField(data.timeline) : 'Not provided');
-                    $('#modal-how-heard').text(data.how_heard ? formatField(data.how_heard) : 'Not provided');
-                    $('#modal-marketing-consent').text(data.marketing_consent == 1 ? 'Yes' : 'No');
 
                     $('#modal-message').html(data.message.replace(/\n/g, '<br>'));
                     $('#modal-date').text(data.formatted_date);
