@@ -147,7 +147,7 @@ get_header(); ?>
                         <p>Guaranteed, high-performance internet leased line provider with symmetric bandwidth for enterprises of all sizes. We provide a robust network with a dedicated, uncontested connection for uninterrupted, high-speed data transfer.</p>
                     </div>
                     <div class="dia-image">
-                        <img src="https://api.pikwy.com/web/68890d0a04f33a1e8b2dcf43.jpg" alt="Dedicated Internet Access">
+                        <img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/images/dia.jpg" alt="Dedicated Internet Access">
                     </div>
                 </div>
             </div>
