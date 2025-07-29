@@ -355,7 +355,7 @@ Template: astra
 }
 
 .new-hero {
-    background: url('https://api.pikwy.com/web/68890d0a04f33a1e8b2dcf43.jpg') no-repeat center center;
+    background: url('assets/images/banner.jpg') no-repeat center center;
     background-size: cover;
 }
 
