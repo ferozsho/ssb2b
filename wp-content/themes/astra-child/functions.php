@@ -48,6 +48,16 @@ function child_enqueue_scripts() {
         ));
     }
 
+    if (is_front_page()) {
+        wp_enqueue_script(
+            'faq-js',
+            get_stylesheet_directory_uri() . '/js/faq.js',
+            array(),
+            CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
+            true
+        );
+    }
+
     // Enqueue Contact Form CSS and JS
     if (is_page_template('page-contact-us.php')) {
         wp_enqueue_style(
