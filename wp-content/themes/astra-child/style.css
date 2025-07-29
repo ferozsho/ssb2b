@@ -355,7 +355,7 @@ Template: astra
 }
 
 .new-hero {
-    background: url('assets/images/banner.jpg') no-repeat center center;
+    background: url('<?php echo get_stylesheet_directory_uri(); ?>/assets/images/banner.jpg') no-repeat center center;
     background-size: cover;
 }
 
