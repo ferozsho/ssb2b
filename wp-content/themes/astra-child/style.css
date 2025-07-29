@@ -354,16 +354,56 @@ Template: astra
     margin-top: 0;
 }
 
-.hero-section {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    background: linear-gradient(35deg, rgb(6,0,151) 0%, rgb(130,4,255) 73%, rgb(193,15,255) 100%);
-    min-height: 720px;
-    display: flex;
-    align-items: center;
+.new-hero {
+    background: url('https://api.pikwy.com/web/68890d0a04f33a1e8b2dcf43.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+.hero-form {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-form h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.hero-form .form-group {
+    margin-bottom: 15px;
+}
+
+.hero-form input,
+.hero-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.hero-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.hero-form .btn-secondary {
+    width: 100%;
+    background: #007bff;
     color: white;
-    position: relative;
-    overflow: hidden;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.hero-form .btn-secondary:hover {
+    background: #0056b3;
 }
 
 .hero-container {
@@ -508,6 +548,123 @@ Template: astra
     color: #2c3e50;
 }
 
+/* Client Experiences Section */
+.client-experiences-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.client-experiences-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.client-experiences-grid {
+    margin-top: 40px;
+}
+
+.client-experience-card {
+    background: #f8f9fa;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.client-info {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.client-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.client-company {
+    color: #6c757d;
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.faq-accordion {
+    margin-top: 40px;
+}
+
+.faq-item {
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.faq-question {
+    padding: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+
+.faq-question::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-question::after {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.faq-answer {
+    padding: 0 20px 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 1000px;
+}
+
+/* Final CTA Section */
+.final-cta-section {
+    padding: 80px 0;
+    background: #007bff;
+    color: #fff;
+    text-align: center;
+}
+
+.final-cta-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.final-cta-section .section-title {
+    color: #fff;
+}
+
+.final-cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
 .service-description {
     color: #6c757d;
     line-height: 1.6;
@@ -520,6 +677,199 @@ Template: astra
     margin-left: calc(-50vw + 50%);
     padding: 120px 0;
     background: white;
+}
+
+.why-choose-us-section .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 60px;
+    color: #2c3e50;
+    position: relative;
+}
+
+.why-choose-us-section .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 80px;
+}
+
+.why-choose-us-section .feature-card {
+    border: 1px solid #e9ecef;
+    padding: 40px;
+    border-radius: 12px;
+    background: #f8f9fa;
+}
+
+.why-choose-us-section .feature-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.why-choose-us-section .feature-description {
+    color: #6c757d;
+    line-height: 1.7;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Plans Section */
+.plans-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.plans-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.plan-card {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.plan-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.plan-description {
+    color: #6c757d;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* What We Offer Section */
+.what-we-offer-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.what-we-offer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.what-we-offer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.what-we-offer-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.what-we-offer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.what-we-offer-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* DIA Section */
+.dia-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.dia-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.dia-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.dia-text .section-title {
+    text-align: left;
+}
+
+.dia-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+/* Ishan Advantage Section */
+.ishan-advantage-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.ishan-advantage-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.ishan-advantage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.ishan-advantage-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.ishan-advantage-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.ishan-advantage-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #2c3e50;
 }
 
 .why-choose-container {
