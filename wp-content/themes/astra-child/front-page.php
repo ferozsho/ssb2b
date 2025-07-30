@@ -50,7 +50,7 @@ get_header(); ?>
         <!-- Why Choose Us Section -->
         <section class="why-choose-us-section" id="whyus">
             <div class="why-choose-container">
-                <h2 class="section-title">Why choose Ishan Leased Line over other internet?</h2>
+                <h2 class="section-title">Why choose SS Enterprises Leased Line over other internet?</h2>
 
                 <div class="features-grid">
                     <div class="feature-card">
@@ -156,7 +156,7 @@ get_header(); ?>
         <!-- Ishan Advantage Section -->
         <section class="ishan-advantage-section">
             <div class="ishan-advantage-container">
-                <h2 class="section-title">The Ishan Advantage</h2>
+                <h2 class="section-title">The SS Enterprises Advantage</h2>
                 <div class="ishan-advantage-grid">
                     <div class="ishan-advantage-card">
                         <div class="ishan-advantage-title">Quick Delivery</div>
@@ -172,7 +172,7 @@ get_header(); ?>
                     </div>
                     <div class="ishan-advantage-card">
                         <div class="ishan-advantage-title">Nationwide Coverage</div>
-                        <p>Benefit from our extensive network coverage, with a presence in multiple locations with Ishan's extensive leased line.</p>
+                        <p>Benefit from our extensive network coverage, with a presence in multiple locations with SS Enterprises's extensive leased line.</p>
                     </div>
                     <div class="ishan-advantage-card">
                         <div class="ishan-advantage-title">24/7 Support</div>
@@ -192,7 +192,7 @@ get_header(); ?>
                 <h2 class="section-title">Client Experiences</h2>
                 <div class="client-experiences-grid">
                     <div class="client-experience-card">
-                        <p>"Ishan Technologies, our IT partner, exhibited design as well as project management capabilities to meet our Wi-Fi requirements. Ishan's project teams displayed maturity and perseverance to support our needs. They helped us deliver the critical milestones on time. I am happy to say that we have a reliable partner for our IT needs and I would recommend Ishan to anyone with similar needs elsewhere."</p>
+                        <p>"SS Enterprises, our IT partner, exhibited design as well as project management capabilities to meet our Wi-Fi requirements. SS Enterprises's project teams displayed maturity and perseverance to support our needs. They helped us deliver the critical milestones on time. I am happy to say that we have a reliable partner for our IT needs and I would recommend SS Enterprises to anyone with similar needs elsewhere."</p>
                         <div class="client-info">
                             <div class="client-name">Haresh Patel</div>
                             <div class="client-company">Director, Ekaaya</div>
