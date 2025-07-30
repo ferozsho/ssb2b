@@ -394,10 +394,10 @@ Template: astra
     width: 100%;
     background: #007bff;
     color: white;
-    padding: 12px;
+    padding: 15px;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 18px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
@@ -418,8 +418,8 @@ Template: astra
 
 .hero-content {
     display: grid;
-    grid-template-columns: 1fr 43%;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
     align-items: center;
 }
 
@@ -515,7 +515,7 @@ Template: astra
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 60px;
+    gap: 80px;
     margin-top: 40px;
 }
 
@@ -674,6 +674,9 @@ Template: astra
 .final-cta-section .btn-primary {
     background: white;
     color: #007bff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
     box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
 }
 
@@ -749,13 +752,13 @@ Template: astra
 .plans-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+    gap: 60px;
     margin-top: 40px;
 }
 
 .plan-card {
     background: #f8f9fa;
-    padding: 30px;
+    padding: 40px;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -763,7 +766,7 @@ Template: astra
     border: 1px solid #e9ecef;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 .plan-card:hover {
@@ -799,18 +802,21 @@ Template: astra
 .what-we-offer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
+    gap: 60px;
     margin-top: 40px;
 }
 
 .what-we-offer-card {
     background: #fff;
-    padding: 30px;
+    padding: 40px;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .what-we-offer-card:hover {
@@ -868,7 +874,7 @@ Template: astra
 .ishan-advantage-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 60px;
+    gap: 80px;
     margin-top: 40px;
 }
 
@@ -900,13 +906,13 @@ Template: astra
 }
 
 .section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 800;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     color: #2c3e50;
     position: relative;
-    padding-bottom: 15px;
+    padding-bottom: 20px;
 }
 
 .section-title::after {
@@ -915,10 +921,10 @@ Template: astra
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 100px;
-    height: 4px;
+    width: 120px;
+    height: 5px;
     background: linear-gradient(135deg, rgb(130,4,255), rgb(193,15,255));
-    border-radius: 2px;
+    border-radius: 2.5px;
 }
 
 .features-grid {
@@ -930,7 +936,7 @@ Template: astra
 
 .feature-card {
     text-align: center;
-    padding: 30px;
+    padding: 40px;
     background: #f8f9fa;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -1022,7 +1028,7 @@ Template: astra
     }
 
     .hero-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
 
     .features-grid {
@@ -1042,11 +1048,11 @@ Template: astra
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     .hero-description {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
     .services-section,
@@ -1058,7 +1064,7 @@ Template: astra
 .client-experiences-section,
 .faq-section,
 .final-cta-section {
-    padding: 80px 0;
+    padding: 100px 0;
     }
 
     .services-grid {
@@ -1071,27 +1077,27 @@ Template: astra
     }
 
     .section-title {
-        font-size: 2rem;
-        margin-bottom: 40px;
+        font-size: 1.75rem;
+        margin-bottom: 30px;
     }
 
     .features-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
-        margin-top: 50px;
+        gap: 30px;
+        margin-top: 40px;
     }
 
     .cta-section {
-        padding: 80px 0;
+        padding: 60px 0;
     }
 
     .cta-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 
     .btn {
-        padding: 14px 24px;
-        font-size: 1rem;
+        padding: 12px 20px;
+        font-size: 0.9rem;
     }
 
     .plans-grid {
