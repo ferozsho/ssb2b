@@ -136,6 +136,8 @@ p {
     background-position: center;
     color: var(--light-text-color);
     padding: 120px 0;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
 }
 
 .hero-content {
