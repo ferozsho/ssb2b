@@ -56,14 +56,6 @@ function child_enqueue_scripts() {
             CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
             true
         );
-
-        wp_enqueue_script(
-            'accordion-js',
-            get_stylesheet_directory_uri() . '/js/accordion.js',
-            array(),
-            CHILD_THEME_SS_ENTERPRISES_B2B_VERSION,
-            true
-        );
     }
 
     // Enqueue Contact Form CSS and JS
@@ -800,4 +792,3 @@ function get_lead_submission_details() {
     wp_send_json_success($submission);
 }
 add_action('wp_ajax_get_lead_submission_details', 'get_lead_submission_details');
-
