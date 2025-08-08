@@ -356,9 +356,34 @@ p {
     margin: 0;
 }
 
+/* 3.4 What We Offer Section */
+.what-we-offer-section {
+    background-color: var(--light-gray-bg);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+}
+
+/* 3.6 SS Advantage Section */
+.ishan-advantage-section {
+    background-color: var(--background-color);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+}
+
 /* 3.8 FAQ Section */
 .faq-section {
     background-color: var(--background-color);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+}
+
+/* 3.9 Final CTA Section */
+.final-cta-section {
+    background: var(--primary-color);
+    color: var(--light-text-color);
+    text-align: center;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
 }
 
 .faq-accordion {
@@ -1668,41 +1693,4 @@ body.page .homepage-template {
 
 .homepage-template .entry-header {
     display: none;
-}
-
-/* Live Chat Placeholder */
-.live-chat-placeholder {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.chat-button {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    border: none;
-    border-radius: 50px;
-    padding: 15px 25px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-.chat-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.chat-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>');
-    background-size: contain;
-    background-repeat: no-repeat;
 }

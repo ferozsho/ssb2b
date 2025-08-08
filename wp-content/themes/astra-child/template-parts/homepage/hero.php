@@ -8,7 +8,7 @@
                     Experience unparalleled reliability with our enterprise-grade leased line services. We provide dedicated, high-speed internet to keep your business-critical operations online, 24/7.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#contact" class="btn btn-primary">Request a Quote</a>
+                    <a href="#lead-form" class="btn btn-primary">Request a Quote</a>
                     <a href="#plans" class="btn btn-secondary">View Plans</a>
                 </div>
             </div>

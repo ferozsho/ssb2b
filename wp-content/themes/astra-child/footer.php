@@ -32,13 +32,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 	astra_body_bottom();
 	wp_footer();
 ?>
-<!-- Live Chat Placeholder -->
-<div class="live-chat-placeholder">
-    <!-- Note for user: Replace this with your live chat service's code snippet -->
-    <button class="chat-button">
-        <span class="chat-icon"></span>
-        Chat with us
-    </button>
-</div>
 	</body>
 </html>
