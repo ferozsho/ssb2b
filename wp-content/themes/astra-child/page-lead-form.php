@@ -51,7 +51,7 @@ if (!is_front_page()) {
                         <?php the_content(); ?>
 
                         <!-- Lead Generation Form -->
-                        <div class="lead-form-container">
+                        <div id="lead-form" class="lead-form-container">
                             <?php
                             // Display success message if form was submitted
                             if (isset($_GET['lead_form_sent']) && $_GET['lead_form_sent'] === '1') {

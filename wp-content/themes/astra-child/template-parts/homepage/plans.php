@@ -10,7 +10,7 @@
                     <p>For Small Teams</p>
                 </div>
                 <div class="plan-price">
-                    <a href="#contact" class="btn btn-secondary">Get a Quote</a>
+                    <a href="#lead-form" class="btn btn-secondary">Get a Quote</a>
                 </div>
             </div>
             <!-- Plan Card 2 -->
@@ -20,7 +20,7 @@
                     <p>Most Popular</p>
                 </div>
                 <div class="plan-price">
-                    <a href="#contact" class="btn btn-primary">Get a Quote</a>
+                    <a href="#lead-form" class="btn btn-primary">Get a Quote</a>
                 </div>
             </div>
             <!-- Plan Card 3 -->
@@ -30,7 +30,7 @@
                     <p>For Large Enterprises</p>
                 </div>
                 <div class="plan-price">
-                    <a href="#contact" class="btn btn-secondary">Get a Quote</a>
+                    <a href="#lead-form" class="btn btn-secondary">Get a Quote</a>
                 </div>
             </div>
              <!-- Plan Card 4 -->
@@ -40,7 +40,7 @@
                     <p>Tailored for you</p>
                 </div>
                 <div class="plan-price">
-                    <a href="#contact" class="btn btn-secondary">Get a Quote</a>
+                    <a href="#lead-form" class="btn btn-secondary">Get a Quote</a>
                 </div>
             </div>
         </div>
